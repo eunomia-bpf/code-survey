@@ -1,11 +1,7 @@
-# test-git
+# bpf subsystem
 
-```
-git clone --mirror http://lore.kernel.org/bpf/0 bpf/git/0.git
+- Wed, 13 Feb 2019 Until 10 Sep 2024: 126469 mails
 
-cd bpf/git/0.git
-../../../dump.sh
-```
 
 Feature versions:
 

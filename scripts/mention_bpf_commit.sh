@@ -1,0 +1,1 @@
+git log --grep=bpf --oneline | wc -l
