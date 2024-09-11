@@ -1,13 +1,4 @@
-# Analysis eBPF
-
-Imagine if you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what can you find with the results? Researcher has proved that LLM can acheive similar level as human when doing summary/survey/questionare task in Market, Chemistry... Such system is also deployed and explored in production for... (See the citation)
-
-Workflow/Method: 
-
-```
-[Human Experts (LLM) design survey] -> [LLM Agent complete survey] -> [Human Experts (LLM) evaluate survey results samples] -> [Human Experts (LLM) give the report]
-```
-
+# Analysis of eBPF kernel development
 
 ## Datasets with eBPF: Linux BPF subsystem
 
@@ -18,6 +9,11 @@ Workflow/Method:
 
 All the datasets are automatically updated by CI! The interative analysis is on the way to deployment...
 
+## Method
+
+```
+[Human Experts design survey] -> [LLM Agent complete survey] -> [Human Experts evaluate survey results samples] -> [Human Experts give the report]
+```
 
 ## Analysis and insights
 
