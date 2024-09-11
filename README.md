@@ -1,17 +1,22 @@
-# Let's see the current and the future of the Linux with LLM Agent
+# Linux kernel LLM Agent(LKLA)
 
 Imagine if you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what can you find with the results?
 
-Workflow/Method: 
+This is what you can get from LKLA and quantatively Analysis with our datasets:
 
-```
-[Human Experts (LLM) design survey] -> [LLM Agent complete survey] -> [Human Experts (LLM) evaluate survey results samples] -> [Human Experts (LLM) give the report]
-```
+1. **Understand decision-making**: Identify the rationale behind code changes and why specific solutions were chosen.
+2. **Evaluate collaboration quality**: Gain insights into how effectively developers communicate and address feedback.
+3. **Spot bottlenecks**: Discover inefficiencies in the review, testing, or approval processes that delay progress.
+4. **Trace impact on kernel evolution**: Track patterns in feature additions, security fixes, and performance optimizations over time.
+5. **Assess developer experience**: Measure satisfaction, difficulties faced, and the level of community support developers feel.
+6. **Monitor subsystem stability**: Identify which kernel areas are frequently changing versus more stable and robust ones.
+7. **Enhance tooling feedback**: Understand which tools help or hinder productivity, leading to potential improvements.
 
-You can define LLM Agent for each step, but it will be better to work with Human Experts to get better results in 2024.
+We are trying to turn impossible into possible with AI, changing weeks of work into minutes.
 
+## Example report: eBPF
 
-Let's take eBPF as an example, the same tool can be directly applied to other subsystems.
+QUESTIONS and insights:
 
 ## Datasets with eBPF: Linux BPF subsystem
 
@@ -23,6 +28,21 @@ Let's take eBPF as an example, the same tool can be directly applied to other su
 All the datasets are automatically updated by CI! The interative analysis is on the way to deployment...
 
 The result can be found in [report_ebpf.md](report_ebpf.md).
+
+## Workflow/Method:
+
+```
+[Human Experts design survey] -> [LLM Agent complete survey] -> [Human Experts (LLM) evaluate survey results samples] -> [Human Experts (LLM) give the report]
+```
+
+Best practice for design survey:
+
+- Survey will also be used as the prompt and action workflow for LLM Agent, so it does require prompt engineering with domain knowledge.
+- Do not let LLM Answer any opening questions require domain knowledge.
+- let LLM do summary, choice or say yes/no.
+- Use traditional method and human expert to evaluate the results.
+
+It will be better to work with Human Experts to get better results in 2024, but LLM Agent can also help you if you are not human experts.
 
 ## why llm?
 
