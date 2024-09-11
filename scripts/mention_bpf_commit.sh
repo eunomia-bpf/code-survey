@@ -1,1 +1,1 @@
-git log --grep=bpf --oneline | wc -l
+git -C linux log --grep=bpf --oneline | wc -l
