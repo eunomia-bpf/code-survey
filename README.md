@@ -2,9 +2,13 @@
 
 Imagine if you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what can you find with the results? Researcher has proved that LLM can acheive similar level as human when doing summary/survey/questionare task in Market, Chemistry... Such system is also deployed and explored in production for... (See the citation)
 
-Workflow/Method: [Human Experts design survey] -> [LLM Agent complete survey] -> [Human Experts evaluate survey results samples] -> 
+Workflow/Method: 
 
-Take eBPF as an example, the same tool can be easily applied to other
+```
+[Human Experts (LLM) design survey] -> [LLM Agent complete survey] -> [Human Experts (LLM) evaluate survey results samples] -> [Human Experts (LLM) give the report]
+```
+
+Let's take eBPF as an example, the same tool can be directly applied to other subsystems.
 
 ## Datasets with eBPF: Linux BPF subsystem
 
