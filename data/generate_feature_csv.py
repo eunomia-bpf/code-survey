@@ -11,8 +11,8 @@ def load_yaml(file_path):
 def get_commit_details(commit_id):
     command = [
         'git', '-C', '../linux', 'show', commit_id, 
-        '--pretty=format:"%H","%an","%ae","%ad","%cn","%ce","%cd","%T","%P","%B","%N"',
-        '--date=iso', '--no-patch'
+        '--pretty=format:"%H","%an","%ae","%at","%cn","%ce","%ct","%T","%P","%B","%N"',
+        '--no-patch'
     ]
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
@@ -26,7 +26,7 @@ def write_to_csv(data, csv_file):
     with open(csv_file, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["commit_id", "feature_type", "feature_name", "commit_hash", "author_name", "author_email", "author_date",
-                         "committer_name", "committer_email", "commit_date", "tree_hash", "parent_hashes", "commit_message", "refs"])
+                         "committer_name", "committer_email", "commit_date_timestamp", "tree_hash", "parent_hashes", "commit_message", "refs"])
 
         for row in data:
             writer.writerow(row)
