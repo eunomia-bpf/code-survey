@@ -1,0 +1,25 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Commit Feedback"
+description: "A schema to represent feedback on a commit."
+type: object
+properties:
+  is_good_feature:
+    type: boolean
+    description: "Indicates if the commit represents a good feature."
+  category:
+    type: string
+    description: "The category of the commit."
+    enum:
+      - Observability
+      - Security
+      - Networking
+      - Other
+  summary:
+    type: string
+    description: "A brief summary of the commit's feature."
+    nullable: true
+required:
+  - is_good_feature
+  - category
+additionalProperties: false
+
