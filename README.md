@@ -1,6 +1,6 @@
 # Let's see the current and the future of the Linux with LLM Agent
 
-Imagine if you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what can you find with the results? Researcher has proved that LLM can acheive similar level as human when doing summary/survey/questionare task in Market, Chemistry... Such system is also deployed and explored in production for... (See the citation)
+Imagine if you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what can you find with the results?
 
 Workflow/Method: 
 
@@ -9,6 +9,7 @@ Workflow/Method:
 ```
 
 You can define LLM Agent for each step, but it will be better to work with Human Experts to get better results in 2024.
+
 
 Let's take eBPF as an example, the same tool can be directly applied to other subsystems.
 
@@ -22,6 +23,18 @@ Let's take eBPF as an example, the same tool can be directly applied to other su
 All the datasets are automatically updated by CI! The interative analysis is on the way to deployment...
 
 The result can be found in [report_ebpf.md](report_ebpf.md).
+
+## why llm?
+
+- Researcher has proved that LLM can acheive similar level as human when doing summary/survey/questionare task in Market, Chemistry... Such system is also deployed and explored in production for... (See the citation)
+- why not other methods?
+  - domain knowledgeit（cite)
+  - unstruct data （cite）
+  - human expert is too expensive and impossible for such task
+ 
+What question can llm help answer but other cannot?
+
+- bug...
 
 ## How to define a LLM Agent for analysis
 
@@ -39,3 +52,6 @@ The result can be found in [report_ebpf.md](report_ebpf.md).
 ```yml
 
 ```
+
+## reference
+
