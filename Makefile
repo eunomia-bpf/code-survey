@@ -1,6 +1,6 @@
 .PHONY: linux mails/bpf data/feature-versions.yaml agent/questionaire
 linux:
-	git clone https://github.com/torvalds/linux
+	git clone https://github.com/torvalds/linux --depth=1
 
 mails/bpf:
 	cd mails && git clone --mirror http://lore.kernel.org/bpf/0 bpf/git/0.git
