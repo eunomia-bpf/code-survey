@@ -4,10 +4,9 @@
 git clone --mirror http://lore.kernel.org/bpf/0 bpf/git/0.git
 
 cd bpf/git/0.git
-
-chmod +x ../../../dump.sh
 ../../../dump.sh
-
-# See emails at bpf/git/0.git/emails
 ```
 
+Feature versions:
+
+- https://github.com/isovalent/ebpf-docs/blob/master/data/feature-versions.yaml
