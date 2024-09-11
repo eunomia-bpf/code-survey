@@ -1,3 +1,6 @@
 linux
 mails/bpf
 linux/commits.csv
+.env
+__pycache__
+*.pyc
