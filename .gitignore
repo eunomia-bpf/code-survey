@@ -4,3 +4,4 @@ linux/commits.csv
 .env
 __pycache__
 *.pyc
+/env
