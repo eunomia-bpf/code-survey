@@ -1,0 +1,22 @@
+title: "Feature Classification Survey"
+description: "A survey about the use cases and summary of feature commits."
+questions:
+  - id: feature_classification
+    type: single_choice
+    question: "What may be the use cases of the feature?"
+    choices:
+      - value: security
+      - value: network
+        subquestions:
+          - id: network_class
+            type: single_choice
+            question: "What programs may the type of the network feature relate to?"
+            choices:
+              - value: xdp
+              - value: socket
+    required: true
+
+  - id: summary
+    type: fill_in
+    question: "Please provide a summary of the commit"
+    required: false

@@ -1,0 +1,47 @@
+type: object
+properties:
+  title:
+    type: string
+    description: The title of the questionnaire
+  description:
+    type: string
+    description: The description of the questionnaire
+  questions:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the question
+        type:
+          type: string
+          enum: [single_choice, multiple_choice, fill_in]
+          description: The type of the question (single_choice for radio buttons, multiple_choice for checkboxes, and fill_in for open-ended questions)
+        question:
+          type: string
+          description: The question text
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: The value of the option
+              subquestions:
+                type: array
+                items:
+                  $ref: "#/properties/questions/items"
+                description: Follow-up questions if this option is selected
+          description: The list of options, applicable for single and multiple choice questions
+        required:
+          type: boolean
+          description: Indicates whether this question is mandatory
+      required:
+        - id
+        - type
+        - question
+required:
+  - title
+  - questions

@@ -1,4 +1,4 @@
-.PHONY: linux mails/bpf data/feature-versions.yaml agent/questionaire
+.PHONY: linux mails/bpf data/feature-versions.yaml agent/questionaire survey/schema
 linux:
 	git clone https://github.com/torvalds/linux --depth=1
 
@@ -10,3 +10,6 @@ data/feature-versions.yaml:
 
 agent/questionaire:
 	python -m datamodel_code_generator --input agent/questionaire.yml --input-file-type jsonschema --output agent/model.py --use-schema-description --use-default
+
+survey/schema:
+	python -m datamodel_code_generator --input survey/schema.yml --input-file-type jsonschema --output survey/model.py --use-schema-description --use-default
