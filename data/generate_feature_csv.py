@@ -10,7 +10,7 @@ def load_yaml(file_path):
 # Function to get commit details using git show
 def get_commit_details(commit_id):
     command = [
-        'git', '-C', '../linux', 'show', commit_id, 
+        'git', '-C', 'linux', 'show', commit_id, 
         '--pretty=format:"%H","%an","%ae","%at","%cn","%ce","%ct","%T","%P","%B","%N"',
         '--no-patch'
     ]

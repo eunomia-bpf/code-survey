@@ -1,95 +1,64 @@
-import csv
 import subprocess
-import os
+import csv
 
-# File paths
-output_csv = 'data/bpf_commits.csv'
+# Function to run the bash command to generate the commit list
+def generate_commit_list():
+    bash_command = 'git -C linux log --grep=bpf --pretty=format:%H'  # No quotes around %H
+    result = subprocess.run(bash_command, shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error: {result.stderr or result.stdout}")
+        return []
+    commit_ids = result.stdout.strip().split('\n')
+    print(f"Generated {len(commit_ids)} commit IDs")
+    return commit_ids
 
-# Function to get details of a commit
-def get_commit_details(commit_hash):
-    result = subprocess.run(
-        ['git', '-C', 'linux', 'show', '--no-patch', '--format="%H","%an","%ae","%at","%cn","%ce","%ct","%T","%P","%B"', commit_hash],
-        stdout=subprocess.PIPE,
-        text=True
-    )
-    return result.stdout.strip()
+# Function to get commit details using git show
+def get_commit_details(commit_id):
+    command = [
+        'git', '-C', 'linux', 'show', commit_id, 
+        '--pretty=format:%H,%an,%ae,%at,%cn,%ce,%ct,%T,%P,%B,%N',  # No quotes here either
+        '--no-patch'
+    ]
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error: {result.stderr or result.stdout}")
+        return []
+    print(f"Processed commit: {commit_id}")  # Print commit id to track progress
+    return result.stdout.strip().split(',')
 
-# Function to get the list of files changed in a commit
-def get_changed_files(commit_hash):
-    result = subprocess.run(
-        ['git', '-C', 'linux', 'diff-tree', '--no-commit-id', '--name-only', '-r', commit_hash],
-        stdout=subprocess.PIPE,
-        text=True
-    )
-    return result.stdout.strip().split('\n')
+# Function to write commit details into a CSV
+def write_to_csv(data, csv_file):
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["commit_id", "commit_hash", "author_name", "author_email", "author_date",
+                         "committer_name", "committer_email", "commit_date_timestamp", "tree_hash", 
+                         "parent_hashes", "commit_message", "refs"])
 
-# Function to check if "bpf" is in the commit message, title, or changed file paths
-def contains_bpf(commit_details, changed_files):
-    if 'bpf' in commit_details.lower() or any('bpf' in file.lower() for file in changed_files):
-        return True
-    return False
+        for row in data:
+            writer.writerow(row)
 
-# Function to get all commit hashes
-def get_all_commit_hashes():
-    result = subprocess.run(
-        ['git', '-C', 'linux', 'rev-list', '--all'],
-        stdout=subprocess.PIPE,
-        text=True
-    )
-    return result.stdout.strip().split('\n')
+# Function to process commit IDs and generate a new CSV with commit details
+def process_commits_and_generate_csv(output_csv):
+    # Step 1: Generate commit IDs
+    commit_ids = generate_commit_list()
+    
+    if not commit_ids:
+        print("No commits found. Exiting.")
+        return
 
-# Function to get a list of already processed commit hashes from the CSV
-def get_processed_commits(csv_file):
-    if not os.path.exists(csv_file):
-        return set()  # Return an empty set if the file doesn't exist
+    csv_data = []
+    
+    # Step 2: Get details for each commit
+    for commit_id in commit_ids:
+        commit_details = get_commit_details(commit_id)
+        if commit_details:
+            csv_data.append([commit_id] + commit_details)
 
-    with open(csv_file, newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        next(reader)  # Skip header
-        processed_commits = {row[0] for row in reader}  # Get all commit hashes (first column)
-    return processed_commits
+    # Step 3: Write the commit details to the CSV
+    write_to_csv(csv_data, output_csv)
 
-# Get the set of already processed commits
-processed_commits = get_processed_commits(output_csv)
+# Example usage
+output_csv = 'data/bpf_commits.csv'  # Path to the output CSV file
 
-print("Loading all commit hashes...")
-# Get all commit hashes in the repository
-all_commits = get_all_commit_hashes()
-print(f"Total commits: {len(all_commits)}")
-
-# Prepare the CSV header
-header = ["Commit Hash", "Author Name", "Author Email", "Author Timestamp", "Committer Name", "Committer Email", "Committer Timestamp", "Tree Hash", "Parent Hashes", "Commit Message", "Changed Files"]
-
-# Open the CSV file in append mode
-with open(output_csv, 'a', newline='', encoding='utf-8') as csvfile:
-    writer = csv.writer(csvfile)
-
-    # If the file is newly created, write the header
-    if os.path.getsize(output_csv) == 0:
-        writer.writerow(header)
-
-    # Loop through each commit and check for "bpf"
-    for commit_hash in all_commits:
-        # Skip already processed commits
-        if commit_hash in processed_commits:
-            continue
-
-        count = str(all_commits.index(commit_hash) + 1)
-        print(f"Analyzing commit {count} of {len(all_commits)}")
-
-        # Get the commit details and changed files
-        commit_details = get_commit_details(commit_hash)
-        changed_files = get_changed_files(commit_hash)
-
-        # Check if the commit contains "bpf"
-        if contains_bpf(commit_details, changed_files):
-            # Split commit details into fields and add the changed files
-            commit_fields = commit_details.split('","')
-            commit_fields[0] = commit_fields[0].strip('"')  # Clean the first field
-            commit_fields[-1] = commit_fields[-1].strip('"')  # Clean the last field
-            commit_fields.append(', '.join(changed_files))  # Add changed files
-
-            # Write the commit data to the CSV
-            writer.writerow(commit_fields)
-
-print(f"Filtered 'bpf' commits saved to {output_csv}")
+if __name__ == '__main__':
+    process_commits_and_generate_csv(output_csv)

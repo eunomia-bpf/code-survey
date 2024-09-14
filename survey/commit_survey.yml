@@ -1,0 +1,70 @@
+title: "Commit Classification Survey"
+description: "A survey about the type, use cases and summary of commit in Linux eBPF."
+questions:
+  - id: summary
+    type: fill_in
+    question: "Please provide a summary of the commit in one short sentence not longer than 30 words. Only output one sentence."
+    required: true
+
+  - id: keywords
+    type: fill_in
+    question: "Please extract no more than 3 keywords from the commit. Only output 3 keywords, without any special characters."
+    required: true
+
+  - id: commit_classification
+    type: single_choice
+    question: "What may be the main type of the commit?"
+    choices:
+      - value: It's a bug fix.
+      - value: It's a new feature.
+      - value: It's a performance optimization.
+      - value: It's a cleanup or refactoring in the code.
+      - value: It's a documentation change or typo fix.
+      - value: It's a test case or test infrastructure change.
+      - value: It's a build system or CI/CD change.
+      - value: It's a security fix.
+      - value: It's other type of commit.
+
+  - id: commit_complexity
+    type: single_choice
+    question: "What is the estimated complexity of implementing this commit?"
+    choices:
+      - value: Simple, can be used without much configuration. For example, a simple helper function.
+      - value: Moderate, requires some setup or understanding of the system. For example, a new map type or a new link type.
+      - value: Complex, needs expert knowledge or significant changes to existing systems. Like adding a completely new subsystem support or a completely new program type don't exist before.
+
+  - id: Major related component
+    type: single_choice
+    question: "What major component that the commit is related to?"
+    choices:
+      - value: The eBPF verifier
+      - value: The JIT compiler
+      - value: The helper and kfuncs
+      - value: The syscall interface
+      - value: The eBPF maps
+      - value: The libbpf library
+      - value: The bpftool utility
+      - value: The test cases and makefiles
+      - value: The attach events and bpf link. e.g. perf events, tracepoints, etc.
+      - value: The BPF Type Format (BTF)
+      - value: Other component related to eBPF but not listed above.
+      - value: It's not related to any of the above, it's not related to bpf subsystem in Linux kernel, may be wrong data.
+
+  - id: program_types_related
+    type: multiple_choice
+    question: "What eBPF program(s) may the commit relate to and designed for?"
+    choices:
+      - value: xdp like programs
+      - value: socket like programs
+      - value: tc/netfilter like programs
+      - value: tracepoints like programs
+      - value: kprobe/uprobe/ftrace like programs
+      - value: profile like programs
+      - value: LSM like programs
+      - value: cgroup like programs
+      - value: HID driver like programs
+      - value: scheduler like programs
+      - value: It improves the overall eBPF infrastructure (e.g., verifier, runtime, etc.).
+      - value: It's an experimental feature that doesn't fit into existing categories.
+      - value: It's not related to any of the above.
+      - value: other
