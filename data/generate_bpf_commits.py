@@ -32,7 +32,7 @@ def contains_bpf(commit_details, changed_files):
 # Function to get all commit hashes
 def get_all_commit_hashes():
     result = subprocess.run(
-        ['git', '-C', 'linux', 'rev-list', '--all'etry],
+        ['git', '-C', 'linux', 'rev-list', '--all'],
         stdout=subprocess.PIPE,
         text=True
     )
