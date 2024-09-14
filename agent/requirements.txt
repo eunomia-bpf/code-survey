@@ -1,5 +1,0 @@
-openai
-python-dotenv
-jsonschema
-PyYAML
-datamodel-code-generator

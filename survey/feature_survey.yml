@@ -1,0 +1,51 @@
+title: "Feature Classification Survey"
+description: "A survey about the use cases and summary of feature in Linux eBPF. Note there might be some times the commit message is not related to the feature itself. If that happens, you need to focus on the feature itself and ignore the commit message. Pay attention to the feature itself."
+questions:
+  - id: summary
+    type: fill_in
+    question: "Please provide a summary of the commit in one short sentence not longer than 100 words. Only output one sentence."
+    required: true
+  
+  - id: keywords
+    type: fill_in
+    question: "Please extract no more than 3 keywords from the commit. Only output 3 keywords."
+    required: true
+
+  - id: feature_classification
+    type: multiple_choice
+    question: "What feature(s) may be the main use cases of the feature? You can select multiple options."
+    choices:
+      - value: It's used to improve the security of the Linux. e.g. used for controlling access to the system, etc.
+      - value: It's used to improve the network of the Linux. e.g. used for improving the network performance, etc.
+      - value: It's used to improve the observability of the Linux. e.g. used for monitoring, tracing the system, improve the performance, etc.
+      - value: It's a performance optimization unrelated to security, networking, or observability.
+      - value: It relates to a specific hardware feature (e.g., accelerated offload, hardware tracing, etc.)
+      - value: The feature relate other use cases not listed above.
+      - value: It does not relate to any of the above, it's a general feature for runtime, such as verifier, instructions, etc. You should not other use cases if you select this option.
+
+  - id: feature_complexity
+    type: single_choice
+    question: "What is the estimated complexity of implementing or using this feature?"
+    choices:
+      - value: Simple, can be used without much configuration. For example, a simple helper function.
+      - value: Moderate, requires some setup or understanding of the system. For example, a new map type or a new link type.
+      - value: Complex, needs expert knowledge or significant changes to existing systems. Like adding a completely new subsystem support or a completely new program type don't exist before.
+
+  - id: program_types_related
+    type: multiple_choice
+    question: "What eBPF program(s) may the feature relate to and designed for?"
+    choices:
+      - value: xdp like programs
+      - value: socket like programs
+      - value: tc/netfilter like programs
+      - value: tracepoints like programs
+      - value: kprobe/uprobe/ftrace like programs
+      - value: profile like programs
+      - value: LSM like programs
+      - value: cgroup like programs
+      - value: HID driver like programs
+      - value: scheduler like programs
+      - value: It improves the overall eBPF infrastructure (e.g., verifier, runtime, etc.).
+      - value: It's an experimental feature that doesn't fit into existing categories.
+      - value: It's not related to any of the above.
+      - value: other

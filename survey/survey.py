@@ -1,121 +1,296 @@
-import csv
-from typing import Optional
-
 import yaml
-from model import Choice, Items, Model, Question, Type
-from pydantic import ValidationError
+import sys
+import csv
+import os
+from io import StringIO
+from dotenv import load_dotenv
+import openai
+from openai import OpenAI
 
+# Load environment variables from .env file
+load_dotenv()
 
-class Survey:
-    def __init__(self):
-        self.survey_model = None
-        self.answers = {}
+# Initialize OpenAI client
+openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai
 
-    def load_survey_config(self, file_path: str):
-        """Loads the survey configuration from a YAML file."""
-        try:
-            with open(file_path, "r") as file:
-                config_data = yaml.safe_load(file)
-                self.survey_model = Model(**config_data)
-                self.answers = {}
-        except FileNotFoundError:
-            print(f"File {file_path} not found.")
-        except ValidationError as e:
-            print(f"Error parsing survey config: {e}")
+def load_surveys(filename):
+    with open(filename, 'r') as f:
+        # Split the file content by '##' to separate multiple surveys
+        content = f.read()
+        surveys = [s.strip() for s in content.split('##') if s.strip()]
+        parsed_surveys = []
+        for survey in surveys:
+            parsed_surveys.append(yaml.safe_load(survey))
+        return parsed_surveys
+import re
 
-    def ask_question(self, question):
-        """Displays the current question and handles user input, then recursively handles subquestions."""
-        print(f"Question: {question.question}")
+def ask_question(question, answers, buffer):
+    q_text = question.get('question')
+    q_type = question.get('type')
+    q_id = question.get('id')
+    required = question.get('required', False)
+    choices = question.get('choices', [])
+    subquestions = question.get('subquestions', [])
 
-        if question.type in [Type.single_choice, Type.multiple_choice]:
-            for choice in question.choices:
-                print(f"- {choice.value}")
+    buffer.write("\nCurrent Question:\n")
+    buffer.write(f"{q_text}\n")
 
-        # Ask for user input
-        if question.type == Type.multiple_choice:
-            answer = input(
-                "Your answer (comma-separated for multiple choices): "
-            ).split(",")
-            answer = [ans.strip() for ans in answer]  # Clean up spaces
+    def find_digit_in_response(response):
+        # Look for a digit in the response and return it
+        match = re.search(r'\d+', response)
+        if match:
+            return match.group()
+        return None
+
+    def validate_choices(ai_responses, valid_choices, num_choices):
+        """ Validate if AI's responses contain at least one valid choice """
+        selected_choices = []
+        for resp in ai_responses:
+            matched = False
+            for idx, choice in enumerate(choices):
+                # Match by value or index
+                if resp.lower() == choice['value'].lower() or resp == str(idx + 1):
+                    selected_choices.append(choice['value'])
+                    matched = True
+                    break
+            if not matched:
+                buffer.write(f"Invalid choice: '{resp}', ignoring it.\n")
+        return selected_choices if len(selected_choices) >= num_choices else None
+
+    def retry_if_invalid(prompt, valid_choices, num_choices=1):
+        """ Retry mechanism if no valid input is found """
+        for _ in range(3):  # Allow 3 retries
+            buffer.write("Invalid or empty response, retrying...\n")
+            choice_input = input_from_ai_api(prompt).strip()
+            if choice_input:
+                ai_responses = [resp.strip() for resp in choice_input.split(',')]
+                selected_choices = validate_choices(ai_responses, valid_choices, num_choices)
+                if selected_choices:
+                    return selected_choices
+        buffer.write("Failed to provide a valid response after 3 attempts.\n")
+        return None
+
+    if q_type == 'single_choice':
+        valid_choices = [choice['value'].lower() for choice in choices]
+        for idx, choice in enumerate(choices):
+            buffer.write(f"{idx + 1}. {choice['value']}\n")
+        prompt = buffer.getvalue()
+
+        choice_input = input_from_ai_api(prompt).strip()
+        if not choice_input:
+            choice_input = retry_if_invalid(prompt, valid_choices)
+
+        selected_choice = None
+        if choice_input:
+            # Try to match the AI's response with the choices
+            for choice in choices:
+                if choice_input.lower() == choice['value'].lower():
+                    selected_choice = choice
+                    break
+
+            if not selected_choice:
+                # Try matching by index (digit)
+                digit = find_digit_in_response(choice_input)
+                if digit and 1 <= int(digit) <= len(choices):
+                    selected_choice = choices[int(digit) - 1]
+
+        if selected_choice:
+            answers[q_id] = (q_text, selected_choice['value'])
+            # Handle subquestions if any
+            if 'subquestions' in selected_choice:
+                for subq in selected_choice['subquestions']:
+                    ask_question(subq, answers, buffer)
         else:
-            answer = input("Your answer: ").strip()
+            answers[q_id] = (q_text, choice_input)
 
-        # Validate and store the answer
-        self.validate_and_store_answer(question, answer)
+    elif q_type == 'multiple_choice':
+        valid_choices = [choice['value'].lower() for choice in choices]
+        for idx, choice in enumerate(choices):
+            buffer.write(f"{idx + 1}. {choice['value']}\n")
+        buffer.write("You must select at least one option. You can select multiple options separated by commas. The input should only contain the numbers, without any other words.\n")
+        prompt = buffer.getvalue()
 
-        # If the answer leads to subquestions, recursively ask them
-        if question.type in [Type.single_choice, Type.multiple_choice]:
-            self.handle_subquestions(question, answer)
+        selected_choices = []
+        while not selected_choices:
+            choice_input = input_from_ai_api(prompt).strip()
+            if choice_input:
+                ai_responses = [resp.strip() for resp in choice_input.split(',')]
+                selected_choices = validate_choices(ai_responses, valid_choices, 1)
 
-    def validate_and_store_answer(self, question, answer):
-        """Validates the answer and stores it in the answers dictionary."""
-        if question.type in [Type.single_choice, Type.multiple_choice]:
-            valid_choices = [choice.value for choice in question.choices or []]
+            # Retry if no valid selections were made
+            if not selected_choices:
+                selected_choices = retry_if_invalid(prompt, valid_choices)
 
-            # For multiple_choice, check each answer
-            if question.type == Type.multiple_choice:
-                for ans in answer:
-                    if ans not in valid_choices:
-                        raise ValueError(
-                            f"Invalid answer: '{ans}' is not a valid option for question '{question.id}'"
-                        )
-            # For single_choice, validate the single answer
-            elif question.type == Type.single_choice:
-                if answer not in valid_choices:
-                    raise ValueError(
-                        f"Invalid answer: '{answer}' is not a valid option for question '{question.id}'"
-                    )
+        answers[q_id] = (q_text, selected_choices)
 
-        # Store the answer
-        self.answers[question.id] = answer
+    elif q_type == 'fill_in':
+        prompt = buffer.getvalue()
+        user_input = input_from_ai_api(prompt).strip()
+        if required and not user_input:
+            buffer.write("This question is required.\n")
+            ask_question(question, answers, buffer)
+        else:
+            answers[q_id] = (q_text, user_input)
 
-    def handle_subquestions(self, question, answer):
-        """Recursively handles subquestions based on the current answer."""
-        # For multiple_choice, we need to handle each choice's subquestions
-        if question.type == Type.multiple_choice:
-            for ans in answer:
-                for choice in question.choices:
-                    if choice.value == ans and choice.subquestions:
-                        for subquestion in choice.subquestions:
-                            self.ask_question(subquestion)
-        # For single_choice, handle the selected choice's subquestions
-        elif question.type == Type.single_choice:
-            for choice in question.choices:
-                if choice.value == answer and choice.subquestions:
-                    for subquestion in choice.subquestions:
-                        self.ask_question(subquestion)
+    else:
+        buffer.write("Unknown question type.\n")
 
-    def run_survey(self):
-        """Starts the survey by asking all the main questions."""
-        for question in self.survey_model.questions:
-            self.ask_question(question)
+def run_survey(survey, data_row):
+    title = survey.get('title', 'Survey')
+    description = survey.get('description', '')
+    questions = survey.get('questions', [])
 
-    def export_answers(self) -> dict:
-        """Returns all answered questions as a dictionary."""
-        return self.answers
+    buffer = StringIO()
+    buffer.write(f"\n{'='*50}\n{title}\n{'='*50}\n")
+    buffer.write(f"{description}\n")
 
-    def export_csv(self, filename: str):
-        """Exports the current answers to a CSV file."""
-        with open(filename, "w", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(["Question ID", "Answer"])
-            for question_id, answer in self.answers.items():
-                writer.writerow([question_id, answer])
+    # Display data row information
+    buffer.write("\nInformation:\n")
+    for key, value in data_row.items():
+        buffer.write(f"{key}: {value}\n")
 
+    answers = {}
+    for question in questions:
+        display_previous_answers(answers, buffer)
+        buffer.write(f"\nSurvey Goal: {description}\n")
+        ask_question(question, answers, buffer)
+    # Optionally, print the buffer content for debugging
+    print(buffer.getvalue())
+    return answers
 
-# Example usage
+def display_previous_answers(answers, buffer):
+    if answers:
+        buffer.write("\nPrevious Questions and Answers:\n")
+        for q_id, (question, answer) in answers.items():
+            buffer.write(f"- {question}\n")
+            if isinstance(answer, list):
+                for a in answer:
+                    buffer.write(f"  - {a}\n")
+            else:
+                buffer.write(f"  Answer: {answer}\n")
+
+def input_from_ai_api(message: str):
+    # for test:
+    # print(message)
+    # return input()
+    # print("-" * 50)
+    # print(f"Processing input: {message}")
+    try:
+        response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+            "role": "system",
+            "content": "You are a Linux kernel maintainer. Analyze the provided information and complete the survey questions accordingly. Provide clear and concise answers."
+            },
+            {
+            "role": "user",
+            "content": f"{message}"
+            }
+        ],
+            temperature=0.5,
+            max_tokens=64,
+            top_p=1
+        )
+        feedback = response.choices[0].message.content
+        print(f"Received feedback: {feedback}")
+        print("-" * 50)
+        return feedback
+    except Exception as e:
+        print(f"Error processing input: {e}")
+        exit(1)
+
+def main(survey_file, data_file, output_file):
+    # Load surveys
+    surveys = load_surveys(survey_file)
+
+    # Read data from CSV
+    if not os.path.exists(data_file):
+        print(f"Error: The file {data_file} does not exist.")
+        sys.exit(1)
+
+    with open(data_file, 'r', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        data_rows = list(reader)
+        fieldnames = reader.fieldnames
+
+    # Prepare to write to output CSV
+    output_fieldnames = fieldnames.copy()
+    # Collect all columns needed for multiple-choice options
+    multiple_choice_columns = {}
+    for survey in surveys:
+        for question in survey.get('questions', []):
+            q_id = question['id']
+            if question['type'] == 'multiple_choice':
+                for choice in question['choices']:
+                    column_name = f"{q_id}: {choice['value']}"
+                    multiple_choice_columns[column_name] = (q_id, choice['value'])
+                    if column_name not in output_fieldnames:
+                        output_fieldnames.append(column_name)
+            elif question['type'] == 'single_choice':
+                if q_id not in output_fieldnames:
+                    output_fieldnames.append(q_id)
+            elif question['type'] == 'fill_in':
+                if q_id not in output_fieldnames:
+                    output_fieldnames.append(q_id)
+            # Handle subquestions
+            for choice in question.get('choices', []):
+                if 'subquestions' in choice:
+                    for subq in choice['subquestions']:
+                        subq_id = subq['id']
+                        if subq['type'] == 'multiple_choice':
+                            for sub_choice in subq['choices']:
+                                column_name = f"{subq_id}: {sub_choice['value']}"
+                                multiple_choice_columns[column_name] = (subq_id, sub_choice['value'])
+                                if column_name not in output_fieldnames:
+                                    output_fieldnames.append(column_name)
+                        else:
+                            if subq_id not in output_fieldnames:
+                                output_fieldnames.append(subq_id)
+
+    with open(output_file, 'w', newline='', encoding='utf-8') as csvfile_out:
+        writer = csv.DictWriter(csvfile_out, fieldnames=output_fieldnames)
+        writer.writeheader()
+
+        # Iterate over each data row
+        for idx, data in enumerate(data_rows):
+            print("-" * 50)
+            print(f"Processing data row: {idx + 1}/{len(data_rows)}")
+
+            # For simplicity, use the first survey
+            survey = surveys[0]
+            answers = run_survey(survey, data)
+
+            # Combine data and answers
+            combined_data = data.copy()
+            # Initialize multiple-choice columns to 0
+            for col in multiple_choice_columns.keys():
+                combined_data[col] = 0
+
+            for q_id, (_, answer) in answers.items():
+                if isinstance(answer, list):
+                    # For multiple-choice, set columns to 1 or 0
+                    for choice_value in answer:
+                        column_name = f"{q_id}: {choice_value}"
+                        if column_name in combined_data:
+                            combined_data[column_name] = 1
+                else:
+                    # For single-choice and fill-in, store the answer directly
+                    combined_data[q_id] = answer
+
+            # Write to output CSV
+            writer.writerow(combined_data)
+
+            print(f"Processed data: {data.get('id', 'N/A')}")
+
 if __name__ == "__main__":
-    # File path for the survey YAML config
-    config_file = "example_survey.yml"
+    if len(sys.argv) != 4:
+        print("Usage: python survey_tool.py <survey_yaml_file> <data_csv_file> <output_csv_file>")
+        sys.exit(1)
 
-    survey = Survey()
-    survey.load_survey_config(config_file)
+    survey_file = sys.argv[1]
+    data_file = sys.argv[2]
+    output_file = sys.argv[3]
 
-    if survey.survey_model:
-        survey.run_survey()
-
-        print("Survey completed.")
-        print("Answers:", survey.export_answers())
-
-        # Export answers to CSV
-        survey.export_csv("survey_answers.csv")
+    main(survey_file, data_file, output_file)
