@@ -27,7 +27,7 @@ QUESTIONS and insights:
 
 All the datasets are automatically updated by CI! The interative analysis is on the way to deployment...
 
-The result can be found in [report_ebpf.md](report_ebpf.md).
+The result can be found in [report_ebpf.md](docs/report_ebpf.md).
 
 ## Workflow/Method:
 
@@ -37,6 +37,7 @@ The result can be found in [report_ebpf.md](report_ebpf.md).
 
 Best practice for design survey:
 
+- No `ChatBot`! No `Document Search!`! No `Code Generation!`
 - Survey will also be used as the prompt and action workflow for LLM Agent, so it does require prompt engineering with domain knowledge.
 - Do not let LLM Answer any opening questions require domain knowledge.
 - let LLM do summary, choice or say yes/no.

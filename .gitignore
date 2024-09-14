@@ -5,3 +5,4 @@ linux/commits.csv
 __pycache__
 *.pyc
 /env
+data/all_commits.csv

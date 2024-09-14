@@ -13,3 +13,7 @@ agent/questionaire:
 
 survey/schema:
 	python -m datamodel_code_generator --input survey/schema.yml --input-file-type jsonschema --output survey/model.py --use-schema-description --use-default
+
+data/all_commits.csv:
+	scripts/dump_commit.sh
+

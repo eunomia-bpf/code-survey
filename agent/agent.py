@@ -15,7 +15,6 @@ client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
 )
 
-
 # 定义函数：调用GPT-4o分析commit
 def analyze_commit(commit_message: str):
     try:
@@ -82,7 +81,6 @@ def process_commits(input_csv_path, output_csv_path):
             break
 
     print(f"Processing complete. Results saved to {output_csv_path}")
-
 
 # 运行示例
 input_csv = "../data/feature_commit_details.csv"  # 替换为你的输入文件路径
