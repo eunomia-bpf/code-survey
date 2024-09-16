@@ -70,7 +70,9 @@ What question can llm help answer but other cannot?
 - Memory: which database can it access?
 - Planer(Predefined)
 
-## Config
+## How to design a survey?
+
+An example survey for eBPF commits:
 
 ```yml
 
@@ -78,7 +80,7 @@ What question can llm help answer but other cannot?
 
 ## reference
 
-1. kernel mail
+1. okernel mail
    1. [How to Communicate when Submitting Patches: An Empirical Study of the Linux Kernel](https://dl.acm.org/doi/abs/10.1145/3359210?casa_token=5CrG9X-8QNgAAAAA:mm-N0p2baZSzxgfNbBcSi5HYBF67jdM7VZlJfTbhI2ht2cv1oCHRSL_FRPmM7DHr6ISpV91szCTOEg)
    2. [Differentiating Communication Styles of Leaders on the Linux Kernel Mailing List](https://dl.acm.org/doi/abs/10.1145/2957792.2957801?casa_token=VMchS_jhea0AAAAA:EubJDL_ftM5jmV3_yzwWzDLvLq8hAsexZnss1x3j754OZr4VNENST_tSl0ijQEBnVg5AaFWpZGf3kQ)
 

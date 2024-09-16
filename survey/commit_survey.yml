@@ -46,9 +46,8 @@ questions:
     - value: The libbpf library
     - value: The bpftool utility
     - value: The test cases and makefiles
-    - value: The attach events e.g. perf events tracepoints network HID LSM etc.
-    - value: The BPF Type Format (BTF)
-    - value: Other component related to eBPF but not listed above.
+    - value: The attach events e.g. perf events tracepoints network HID LSM etc. This should be the modify on the event implements, e.g. change how uprobe works.
+    - value: Other implementation component related to eBPF but not listed above.
     - value: It's a merge commit including changes to multiple implementation components.
     - value: It's not related to any of the above it's not related to bpf subsystem in Linux kernel may be wrong data.
 
@@ -62,23 +61,26 @@ questions:
     - value: eBPF events Logic for handling events that trigger eBPF programs such as network packet reception system calls or tracing events. e.g. add new event fix things related to XDP HID perf events tracepoint etc.
     - value: Control Plane interface Logic for userspace control. This involves adding fixing or modifying syscalls that are part of the control plane interface for eBPF allowing userspace programs to interact with eBPF features in the kernel.
     - value: Maps Logic for how eBPF maps (data structures shared between kernel and user space) are created accessed and managed.
+    - value: BPF Type Format (BTF) Logic. e.g. add fix things related to BTF, changes how eBPF programs are CO-RE, using BTF for verifier etc.
     - value: It's a merge commit including changes to multiple logic components.
 
 - id: usecases_or_events
   type: multiple_choice
   question: "What eBPF usecases/events may the commit relate to and designed for?"
   choices:
-    - value: xdp type programs
-    - value: socket type programs
-    - value: tc/netfilter type programs
-    - value: tracepoints type programs
-    - value: kprobe/uprobe/ftrace type programs
-    - value: profile type programs
-    - value: LSM type programs
-    - value: cgroup type programs
-    - value: HID driver type programs
-    - value: scheduler type programs
+    - value: xdp related type programs
+    - value: socket related type programs
+    - value: tc related type programs
+    - value: netfilter related type programs
+    - value: tracepoints related type programs
+    - value: kprobe/ftrace like type kernel dynamic probe programs
+    - value: uprobe/usdt like type user space dynamic probe programs
+    - value: profile related type programs
+    - value: LSM type relatde programs
+    - value: cgroup type related programs
+    - value: HID driver related type programs
+    - value: scheduler relatde type programs
     - value: It improves the overall eBPF infrastructure (e.g. verifier runtime etc.)
     - value: It's an experimental feature that doesn't fit into existing categories.
     - value: It's not related to any of the above.
-    - value: other
+    - value: other type of usecases/bpf programs not listed above.
