@@ -1,6 +1,0 @@
-summary,Improve test coverage by adding new test cases for corner scenarios in verifier component.
-keywords,"test, verifier, coverage"
-commit_classification,It's a test case or test infrastructure change.
-commit_complexity,"Moderate, requires some setup or understanding of the system. For example, a new map type or a new link type."
-Major related component,The eBPF verifier
-program_types_related: choice,"It improves the overall eBPF infrastructure (e.g., verifier, runtime, etc.)."

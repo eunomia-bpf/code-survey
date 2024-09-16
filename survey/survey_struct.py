@@ -126,7 +126,6 @@ def send_openai_request(api_url, headers, payload):
     else:
         raise Exception(f"API call failed: {response.status_code} {response.text}")
 
-# Function to save the response to the CSV file, combining it with commit data
 def save_response_to_csv(content, csv_filename, commit_data):
     # Define the fieldnames (commit fields + survey response fields)
     fieldnames = list(commit_data.keys()) + list(content.keys())
@@ -134,18 +133,21 @@ def save_response_to_csv(content, csv_filename, commit_data):
     # Check if the file exists to determine if we need to write headers
     file_exists = os.path.isfile(csv_filename)
 
-    with open(csv_filename, mode="a", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        
-        if not file_exists:
-            # Write header if the file doesn't exist
-            writer.writeheader()
-        
-        # Combine commit data with survey response content
-        combined_data = {**commit_data, **content}
+    try:
+        with open(csv_filename, mode="a", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames, quoting=csv.QUOTE_ALL) 
+            
+            if not file_exists:
+                # Write header if the file doesn't exist
+                writer.writeheader()
+            
+            # Combine commit data with survey response content
+            combined_data = {**commit_data, **content}
 
-        # Write the row to the CSV
-        writer.writerow(combined_data)
+            # Write the row to the CSV
+            writer.writerow(combined_data)
+    except Exception as e:
+        print(f"Error writing to CSV: {e}")
 
 # Function to read commit data from the CSV file
 def read_commit_data(commit_csv_file):

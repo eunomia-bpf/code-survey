@@ -29,7 +29,7 @@ def get_commit_details(commit_id):
 # Function to write commit details into a CSV
 def write_to_csv(data, csv_file):
     with open(csv_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, quoting=csv.QUOTE_ALL) 
         writer.writerow(["commit_id", "commit_hash", "author_name", "author_email", "author_date",
                          "committer_name", "committer_email", "commit_date_timestamp", "tree_hash", 
                          "parent_hashes", "commit_message", "refs"])
