@@ -38,7 +38,7 @@ def get_commit_message(commit_id):
 # Function to get the list of files changed in a commit
 def get_changed_files(commit_hash):
     result = subprocess.run(
-        ['git', '-C', 'linux', 'diff-tree', '--no-commit-id', '--name-only', '-r', commit_hash],
+        ['git', '-C', 'linux', 'diff-tree', '--no-commit-id', '--stat', '-r', commit_hash],
         stdout=subprocess.PIPE,
         text=True
     )

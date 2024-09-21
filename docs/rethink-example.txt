@@ -1,0 +1,56 @@
+--------------------
+Processing Commit 10/10000 - Commit ID: f50c68763436bc8f805712a7c5ceaf58cfcf5f07
+Survey Title: Commit Classification Survey
+
+
+Description: A survey about the type use cases and summary of commit in Linux eBPF. For choice, try to be as specific as possible based on the commit message and code changes. If the commit message is not clear or does not provide enough information, you can choose the 'I'm not sure' option.
+
+Commit Details:
+  Commit ID: f50c68763436bc8f805712a7c5ceaf58cfcf5f07
+  Author Name: Larysa Zaremba
+  Author Email: larysa.zaremba@intel.com
+  Commit Date: 1725379100
+  Commit Message:
+    ice: check for XDP rings instead of bpf program when unconfiguring  If VSI rebuild is pending, .ndo_bpf() can attach/detach the XDP program on VSI without applying new ring configuration. When unconfiguring the VSI, we can encounter the state in which there is an XDP program but no XDP rings to destroy or there will be XDP rings that need to be destroyed, but no XDP program to indicate their presence.  When unconfiguring, rely on the presence of XDP rings rather then XDP program, as they better represent the current state that has to be destroyed.  Reviewed-by: Wojciech Drewek <wojciech.drewek@intel.com> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com> Tested-by: Chandan Kumar Rout <chandanx.rout@intel.com> Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com> Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+  Changed Files: drivers/net/ethernet/intel/ice/ice_lib.c;drivers/net/ethernet/intel/ice/ice_main.c;drivers/net/ethernet/intel/ice/ice_xsk.c
+  Parent Hashes: 2504b8405768a57a71e660dbfd5abd59f679a03f
+- Please provide a summary of It in one short sentence not longer than 30 words. Only output one sentence.
+
+- Please extract no more than 3 keywords from the commit. Only output 3 keywords without any special characters.
+
+- What may be the main type of the commit?
+
+- What is the estimated complexity of implementing this commit?
+
+- What major implementation component is modified by the commit? It's typically where the code changes happened.
+
+- What major logic component is affected by the commit? Logic component is different from implementation component. it's typically related to the feature. For example a instruction logic change may affect JIT and verifier.
+
+- What major eBPF use cases events or hooks in other subsystems may the commit relate to and be designed for? Note a lot of the commits happend in other subsystems. e.g. perf event. networks. scheduler. But it's still related to how eBPF programs interact with these events. You need to think and seleted the right use cases or events related to the commit, if not applied, seleted
+
+old content:
+{
+  "summary": "The commit modifies the unconfiguration process of VSI to check for XDP rings instead of XDP program state.",
+  "keywords": "XDP,VSI,rings",
+  "commit_classification": "A bug fix. It primarily resolves a bug or issue in the code.",
+  "commit_complexity": "Moderate. Requires some setup or understanding of the system.  e.g. Adding a new map type or modifying a link type.",
+  "major_related_implementation_component": "It's not related to any of the above. It affects an implementation component is totally unrelated to the BPF subsystem.",
+  "major_related_logic_component": "It's not related to any of the above and totally unrelated to the BPF subsystem. The affected code subsystem and componenet has no interaction with BPF subsystem.",
+  "usecases_or_submodule_events": [
+    "It's not related to any of the above because it totally not related to the BPF subsystem. The affected code and componenet has no interaction with BPF subsystem."
+  ]
+}
+Rethinking...
+new content:
+{
+  "summary": "The commit revises the VSI unconfiguration to detect XDP rings instead of the program state for accurate reflection of current state.",
+  "keywords": "XDP,VSI,rings",
+  "commit_classification": "A bug fix. It primarily resolves a bug or issue in the code.",
+  "commit_complexity": "Moderate. Requires some setup or understanding of the system.  e.g. Adding a new map type or modifying a link type.",
+  "major_related_implementation_component": "The attach events e.g. perf events tracepoints network HID LSM etc. It changes how eBPF programs are attached to these specific kernel events. Note some of these commits may happend in other subsystems. e.g. perf event. networks. scheduler. But it's still related to how eBPF programs interact with these events.",
+  "major_related_logic_component": "eBPF events related Logic. E.g. It changes how events like XDP, socket, tc or tracing events like tracepoint, profile, k/uprobe, or others like HID, schedule, LSM attached or affect eBPF programs.",
+  "usecases_or_submodule_events": [
+    "XDP related type programs. It relates to programs handling high-performance packet processing through the XDP framework."
+  ]
+}
+--------------------

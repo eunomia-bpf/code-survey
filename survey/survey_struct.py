@@ -3,8 +3,6 @@ import yaml
 import json
 import requests
 import os
-import os
-import json
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -15,6 +13,7 @@ load_dotenv()
 def load_survey(yaml_file):
     with open(yaml_file, 'r') as file:
         return yaml.safe_load(file)
+
 # Generate a survey prompt based on the questions and commit data
 def generate_survey_prompt(survey, commit_data):
     prompt = []
@@ -30,6 +29,7 @@ def generate_survey_prompt(survey, commit_data):
     prompt.append(f"  Author Email: {commit_data['author_email']}")
     prompt.append(f"  Commit Date: {commit_data['commit_date_timestamp']}")
     prompt.append(f"  Commit Message:\n    {commit_data['commit_message']}")
+    prompt.append(f"  Changed Files: {commit_data['changed_files']}")
     prompt.append(f"  Parent Hashes: {commit_data['parent_hashes']}")
     
     # Add survey questions
@@ -95,7 +95,7 @@ def generate_response_format(survey):
     }
 
 # Prepare the structured API call using the survey questions and commit data
-def prepare_openai_api_call(survey, commit_data):
+def prepare_openai_api_call(survey, content):
     api_url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
@@ -105,7 +105,7 @@ def prepare_openai_api_call(survey, commit_data):
     # Prepare the messages with the generated prompt and commit details
     messages = [
         {"role": "system", "content": "Answer the following survey questions based on the commit details."},
-        {"role": "user", "content": generate_survey_prompt(survey, commit_data)}
+        {"role": "user", "content": content}
     ]
 
     # Generate the response format from the survey
@@ -147,26 +147,48 @@ def read_commit_data(commit_csv_file):
     # Read the CSV file into a pandas DataFrame
     return pd.read_csv(commit_csv_file)
 
+# Function to read already processed commit IDs from the output CSV
+def read_processed_commits(output_csv_file):
+    if os.path.isfile(output_csv_file):
+        try:
+            df = pd.read_csv(output_csv_file, usecols=['commit_id'])
+            return set(df['commit_id'].astype(str).tolist())
+        except Exception as e:
+            print(f"Error reading processed commits: {e}")
+            return set()
+    else:
+        return set()
+
 # Main function to run the process
 def main(limit=3000):
-    # Load the survey YAML file (assuming a function load_survey exists)
+    # Load the survey YAML file
     survey = load_survey("survey/commit_survey.yml")
 
-    # Load the commit data CSV file into a DataFrame
+    # Define file paths
     commit_csv_file = "data/bpf_commits.csv"
     output_csv_file = "data/commit_survey.csv"
     
     # Read commit data into a pandas DataFrame
     commit_df = read_commit_data(commit_csv_file)
 
-    # Get the total number of commits for progress tracking
-    total_commits = min(len(commit_df), limit)
+    # Read already processed commit IDs
+    processed_commits = read_processed_commits(output_csv_file)
+    print(f"Found {len(processed_commits)} already processed commits.")
+
+    # Get the total number of commits to process, excluding already processed
+    commits_to_process = commit_df[~commit_df['commit_id'].astype(str).isin(processed_commits)]
+    total_commits = min(len(commits_to_process), limit)
+    print(f"Total commits to process: {total_commits}")
+
+    if total_commits == 0:
+        print("No new commits to process.")
+        return
 
     # Initialize a counter
     count = 0
 
     # Loop through each row in the DataFrame, limiting to the specified number
-    for idx, commit_data in commit_df.iterrows():
+    for idx, commit_data in commits_to_process.iterrows():
         if count >= limit:
             print(f"Reached the limit of {limit} commits.")
             break
@@ -174,22 +196,41 @@ def main(limit=3000):
         print("--------------------")
         print(f"Processing Commit {count+1}/{total_commits} - Commit ID: {commit_data['commit_id']}")
 
-        # Prepare the API call with commit data (assuming prepare_openai_api_call exists)
-        api_url, headers, payload = prepare_openai_api_call(survey, commit_data)
+        try:
+            # Prepare the API call with commit data
+            prompt = generate_survey_prompt(survey, commit_data)
+            api_url, headers, payload = prepare_openai_api_call(survey, prompt)
 
-        # Send the API request and get the response (assuming send_openai_request exists)
-        response = send_openai_request(api_url, headers, payload)
+            # Send the API request and get the response
+            response = send_openai_request(api_url, headers, payload)
 
-        # Parse the content from the assistant's response
-        content = json.loads(response["choices"][0]["message"]["content"])
-        print(content)
-        print("--------------------")
+            # Extract the content from the response
+            content = json.loads(response["choices"][0]["message"]["content"])
+            print("old content:")
+            print(json.dumps(content, indent=2))
+            rethink_times = 1
+            if rethink_times > 0:
+                print("Rethinking...")
+                new_prompt = prompt + "\nBackground: Your previous response:\n"  + json.dumps(content, indent=2) + "Action: Do you have anything to correct? Please rethink and provide a better response. \n" + survey["hint"]
+                api_url, headers, payload = prepare_openai_api_call(survey, new_prompt)
+                response = send_openai_request(api_url, headers, payload)
+                rethink_times -= 1
+                content = json.loads(response["choices"][0]["message"]["content"])
+            print("new content:")
 
-        # Save the combined commit data and response to the CSV file
-        save_response_to_csv(content, output_csv_file, commit_data)
+            # Parse the content from the assistant's response
+            print(json.dumps(content, indent=2))
+            print("--------------------")
 
-        # Increment the counter
-        count += 1
+            # Save the combined commit data and response to the CSV file
+            save_response_to_csv(content, output_csv_file, commit_data)
+
+            # Increment the counter
+            count += 1
+
+        except Exception as e:
+            print(f"Error processing commit {commit_data['commit_id']}: {e}")
+            # Optionally, you can log errors to a separate file or handle them as needed
 
     print(f"Processed {count} commits. Responses saved to '{output_csv_file}'")
 

@@ -38,7 +38,7 @@ full_date_range = pd.date_range(start=df['author_date'].min(), end=df['author_da
 df_cumulative_fixed = df_cumulative_fixed.reindex(full_date_range, method='ffill', fill_value=0)
 
 # Plot the cumulative count of the four selected feature types over time
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(8, 5))
 for feature_type in ['sock_ops', 'sock_opt_types', 'link_type', 'attach_types']:
     plt.plot(df_cumulative_fixed.index, df_cumulative_fixed[feature_type], label=feature_type)
 

@@ -34,7 +34,7 @@ df_cumulative_fixed = df_sorted.groupby(['author_date', 'feature_type'])['count'
 df_cumulative_fixed = df_cumulative_fixed.cummax()
 
 # Plot the cumulative count of features over time, grouped by feature type
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(8, 5))
 df_cumulative_fixed.plot(ax=plt.gca())
 
 plt.title('Cumulative BPF Features Commit Timeline without Helper/Kfunc')

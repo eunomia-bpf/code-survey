@@ -1,9 +1,10 @@
 title: "Commit Classification Survey"
-description: "A survey about the type, use cases and summary of commit in Linux eBPF."
+description: "A survey about the commit in Linux eBPF, to help better understand the design and evolution of bpf subsystem. For choice, try to be as specific as possible based on the commit message and code changes. If the commit message is not clear or does not provide enough information, you can choose the 'I'm not sure' option."
+hint: "For example, when seems not related to eBPF, confirm it's a rare cases really has nothing to do with eBPF in all it's contents, such as btrfs or misspelled commit message. Do not tag subsystem changes related to eBPF as not."
 questions:
 - id: summary
   type: fill_in
-  question: "Please provide a summary of the commit in one short sentence not longer than 30 words. Only output one sentence."
+  question: "Please provide a summary of It in one short sentence not longer than 30 words. Only output one sentence."
   required: true
 
 - id: keywords
@@ -15,72 +16,82 @@ questions:
   type: single_choice
   question: "What may be the main type of the commit?"
   choices:
-    - value: It's a bug fix.
-    - value: It's a new feature.
-    - value: It's a performance optimization.
-    - value: It's a cleanup or refactoring in the code.
-    - value: It's a documentation change or typo fix.
-    - value: It's a test case or test infrastructure change.
-    - value: It's a build system or CI/CD change.
-    - value: It's a security fix.
-    - value: It's other type of commit.
+    - value: A bug fix. It primarily resolves a bug or issue in the code.
+    - value: A new feature. It adds a new capability or feature that was not previously present.
+    - value: A performance optimization. It improves the performance of existing code such as reducing latency or improving throughput.
+    - value: A cleanup or refactoring in the code. It involves changes to improve code readability maintainability or structure without changing its functionality.
+    - value: A documentation change or typo fix. It only involves changes to documentation files or fixes a typographical error.
+    - value: A test case or test infrastructure change. It adds or modifies test cases test scripts or testing infrastructure.
+    - value: A build system or CI/CD change. It affects the build process continuous integration or deployment pipelines.
+    - value: A security fix. It resolves a security vulnerability or strengthens security measures.
+    - value: It's like a merge commit. It merges changes from another branch or repository.
+    - value: It's other type of commit. It does not fit into any of the categories listed above.
+    - value: I'm not sure about the type of the commit. The nature of It is unclear or uncertain.
 
 - id: commit_complexity
   type: single_choice
-  question: "What is the estimated complexity of implementing this commit?"
+  question: "What is the estimated complexity of implementing this commit considering file and line changes? Note that complexity is most about the impact of the changes. line changes is just a reference."
   choices:
-    - value: Simple can be used without much configuration. For example a simple helper function.
-    - value: Moderate requires some setup or understanding of the system. For example a new map type or a new link type.
-    - value: Complex needs expert knowledge or significant changes to existing systems. Like adding a completely new subsystem support or a completely new program type don't exist before.
-    - value: It's a merge commit not related to any of the above.
+    - value: Simple. Affects 1-20 lines or across 1-2 files. Typically involves minor bug fixes or small refactoring tasks. requiring minimal configuration or understanding of the system.
+    - value: Moderate. Affects 21-100 lines or across a few files (up to 3-4). Involves adding or modifying features or making structural changes that require some system knowledge.
+    - value: Complex. Affects more than 100 lines or across 5 or more files. Involves significant changes such as adding new subsystems or refactoring core components requiring deep system knowledge.
+    - value: Merge-like. The commit merges multiple branches or contains changes that affect various features or components. making it broader than a typical feature or bug fix.
+    - value: Non-code or generated. The changes involve auto-generated code or dependency updates or large formatting commits. which may affect many lines but do not reflect typical code complexity.
+    - value: I'm not sure about the complexity of the commit. It is difficult to estimate the complexity based on the provided commit details.
 
-- id: Major related implementation component
+- id: major_related_implementation_component
   type: single_choice
-  question: "What major implementation component that the commit is modified on?"
+  question: "What major implementation component is modified by the commit? It's typically where the code changes happened."
   choices:
-    - value: The eBPF verifier
-    - value: The eBPF JIT compiler for different architectures
-    - value: The helper and kfuncs
-    - value: The syscall interface
-    - value: The eBPF maps
-    - value: The libbpf library
-    - value: The bpftool utility
-    - value: The test cases and makefiles
-    - value: The attach events e.g. perf events tracepoints network HID LSM etc. This should be the modify on the event implements, e.g. change how uprobe works.
-    - value: Other implementation component related to eBPF but not listed above.
-    - value: It's a merge commit including changes to multiple implementation components.
-    - value: It's not related to any of the above it's not related to bpf subsystem in Linux kernel may be wrong data.
+    - value: The eBPF verifier. This component ensures that eBPF programs are safe to run within the kernel.
+    - value: The eBPF JIT compiler for different architectures. It changes how eBPF bytecode is translated into machine code for different hardware architectures.
+    - value: The helper and kfuncs. It modifies or adds helpers and kernel functions that eBPF programs can call.
+    - value: The syscall interface. It changes the system calls through which user-space programs interact with eBPF.
+    - value: The eBPF maps. It changes how data structures shared between user-space and kernel-space (maps) are created or managed.
+    - value: The libbpf library. It affects the library that simplifies interaction with eBPF from user-space applications.
+    - value: The bpftool utility. It modifies the bpftool utility used for introspecting and interacting with eBPF programs and maps.
+    - value: The test cases and makefiles. It adds or modifies test cases or makefile scripts used for testing or building eBPF programs.
+    - value: The implementation happens in other subsystem and is related to eBPF events. e.g. probes perf events tracepoints network scheduler HID LSM etc. Note it's still related to how eBPF programs interact with these events. 
+    - value: It's like a merge commit. It includes significant changes across multiple components of the system.
+    - value: It's not related to any above. It affects an implementation component not listed but does related to the BPF subsystem.
+    - value: It's not related to any above. It affects an implementation component is totally unrelated to the BPF subsystem.  It's not related to any above because it totally not related to the BPF subsystem. It's a rare case wrong data and need removed.
+    - value: I'm not sure about the implementation component of the commit. The component affected by It is unclear.
 
-- id: Major related logic component
+- id: major_related_logic_component
   type: single_choice
-  question: "What major logic component that the commit is related to? logic component is different to implementation component."
+  question: "What major logic component is affected by the commit? Logic component is different from implementation component. it's typically related to the feature. For example a instruction logic change may affect JIT and verifier."
   choices:
-    - value: A eBPF Instruction Logic for adding fixing or updating the way eBPF instructions are interpreted validated or executed by the eBPF virtual machine in the kernel. e.g. add fix optimized eBPF instructions.
-    - value: A eBPF Program Logic related to different eBPF program types (e.g. XDP tc kprobes) and how the kernel manages attaches and runs these programs. e.g. add eBPF program type fix things related to eBPF program.
-    - value: Runtime features Logic related to eBPF helper or kfunc functions which provide access to kernel resources from eBPF programs (e.g. reading from maps manipulating packet data). e.g. helpers kfuncs etc.
-    - value: eBPF events Logic for handling events that trigger eBPF programs such as network packet reception system calls or tracing events. e.g. add new event fix things related to XDP HID perf events tracepoint etc.
-    - value: Control Plane interface Logic for userspace control. This involves adding fixing or modifying syscalls that are part of the control plane interface for eBPF allowing userspace programs to interact with eBPF features in the kernel.
-    - value: Maps Logic for how eBPF maps (data structures shared between kernel and user space) are created accessed and managed.
-    - value: BPF Type Format (BTF) Logic. e.g. add fix things related to BTF, changes how eBPF programs are CO-RE, using BTF for verifier etc.
-    - value: It's a merge commit including changes to multiple logic components.
+    - value: A eBPF Instruction Logic. E.g. It changes how eBPF instructions are interpreted validated or executed by the eBPF virtual machine in the kernel.
+    - value: Runtime features Logic. E.g. It modifies how runtime features such as helpers kfuncs interact with kernel component or the runtime configurations.
+    - value: eBPF events related Logic. E.g. It changes how events like XDP socket tc or tracing events like tracepoint profile k/uprobe or others like HID schedule LSM attached or affect eBPF programs.
+    - value: Control Plane interface Logic. E.g. It modifies the interface through which user-space programs control or interact with eBPF in the kernel.
+    - value: Maps Logic. E.g. It changes how eBPF maps are created accessed or managed by both user-space and kernel-space.
+    - value: BPF Type Format (BTF) Logic. E.g. It affects BTF which is used for CO-RE (Compile Once Run Everywhere) capabilities or changes how BPF programs interact with the verifier using BTF.
+    - value: It's likely a merge commit. E.g. It involves changes across multiple logic components or is related to merging branches.
+    - value: The general utilities Logic. E.g. It modifies the tools scripts or code used for building testing config or debugging eBPF.
+    - value: It's not related to any above. E.g. It affects a logic component in eBPF that is not listed here and not related to other events.
+    - value:  It's not related to any above because it totally not related to the BPF subsystem. The affected componenet and message has no interaction with BPF subsystem at all. It's a rare case wrong data and need removed.
+    - value: I'm not sure about the logic component of the commit. The affected logic component is unclear.
 
-- id: usecases_or_events
+- id: usecases_or_submodule_events
   type: multiple_choice
-  question: "What eBPF usecases/events may the commit relate to and designed for?"
+  question: "What major eBPF use cases events or hooks in other subsystems may the commit relate to and be designed for? Note a lot of the commits happend in other subsystems. e.g. perf event. networks. scheduler. But it's still related to how eBPF programs interact with these events. You need to think and seleted the right use cases or events related to the commit, if not applied, seleted"
   choices:
-    - value: xdp related type programs
-    - value: socket related type programs
-    - value: tc related type programs
-    - value: netfilter related type programs
-    - value: tracepoints related type programs
-    - value: kprobe/ftrace like type kernel dynamic probe programs
-    - value: uprobe/usdt like type user space dynamic probe programs
-    - value: profile related type programs
-    - value: LSM type relatde programs
-    - value: cgroup type related programs
-    - value: HID driver related type programs
-    - value: scheduler relatde type programs
-    - value: It improves the overall eBPF infrastructure (e.g. verifier runtime etc.)
-    - value: It's an experimental feature that doesn't fit into existing categories.
-    - value: It's not related to any of the above.
-    - value: other type of usecases/bpf programs not listed above.
+    - value: XDP related type programs. It relates to programs handling high-performance packet processing through the XDP framework.
+    - value: Socket related type programs. It relates to programs that process socket-level events such as filtering or manipulating socket traffic.
+    - value: tc related type programs. It affects programs managing traffic control (tc) for queuing or prioritizing network traffic.
+    - value: Netfilter related type programs. It impacts programs interacting with the Netfilter framework used in packet filtering and NAT.
+    - value: Tracepoints related type programs. It modifies programs that attach to tracepoints for low-level kernel event tracing.
+    - value: kprobe/ftrace like type kernel dynamic probe programs. It affects kernel-level probes used for tracing kernel functions. It can be other kernel probes in perf-events.
+    - value: uprobe/usdt like type user-space dynamic probe programs. It impacts user-space probes for tracing user-space applications. It can be other user-space probes in perf-events.
+    - value: Profile related type programs. It affects programs used for profiling system or application performance.
+    - value: LSM type related programs. It relates to eBPF programs used with Linux Security Modules (LSMs) for security enhancements.
+    - value: Struct_ops type related programs. It affects programs tha t allows user-defined methods to be called by subsystems.
+    - value: cgroup type related programs. It affects programs managing resource limits or network behavior via control groups (cgroups).
+    - value: HID driver related type programs. It relates to programs interacting with HID (Human Interface Devices) for input/output events.
+    - value: Scheduler related type programs. It modifies programs that interact with kernel-level scheduling mechanisms.
+    - value: It's not related to any above because it improves the overall eBPF infrastructure. It enhances core infrastructure components like the verifier btf or runtime.
+    - value: It's likely a merge commit. It involves changes across multiple use cases or events.
+    - value: It's not related to any above because it's other type of use cases or BPF programs related to the BPF subsystem but not listed here.
+    - value: It's not related to any above because it totally not related to the BPF subsystem. The affected componenet and message has no interaction with BPF subsystem at all. It's a rare case wrong data and need removed.
+    - value: I'm not sure about the use cases or events of the commit. The relationship between It and specific use cases or events is unclear.

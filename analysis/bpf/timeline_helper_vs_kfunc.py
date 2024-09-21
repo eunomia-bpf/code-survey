@@ -50,7 +50,7 @@ df_helper_cumulative = df_helper_cumulative.reindex(full_date_range, method='ffi
 df_kfunc_cumulative = df_kfunc_cumulative.reindex(full_date_range, method='ffill', fill_value=0)
 
 # Plot the cumulative count of 'helper' and 'kfunc' over time
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(8, 5))
 plt.plot(df_helper_cumulative.index, df_helper_cumulative.values, label='Helper')
 plt.plot(df_kfunc_cumulative.index, df_kfunc_cumulative.values, label='Kfunc', linestyle='--')
 

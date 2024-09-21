@@ -21,6 +21,8 @@ df['feature_type'] = df['feature_type'].replace({
     'attach_types': 'events'
 })
 
+# df['feature_type'] = df['feature_type'].where(df['feature_type'].isin(['helper/kfunc']), 'other')
+
 # Remove 'argument_constants'
 df = df[df['feature_type'] != 'argument_constants']
 
@@ -34,7 +36,7 @@ df_cumulative_fixed = df_sorted.groupby(['author_date', 'feature_type'])['count'
 df_cumulative_fixed = df_cumulative_fixed.cummax()
 
 # Plot the cumulative count of features over time, grouped by feature type
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(8, 5))
 df_cumulative_fixed.plot(ax=plt.gca())
 
 plt.title('Cumulative BPF Features Commit Timeline with BPF Features')
