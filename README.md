@@ -1,4 +1,4 @@
-# Code-Survey: Uncovering Insights in Complex Systems with LLM
+# Code-Survey: Uncovering Insights in Complex Software evolutions with LLM
 
 - Do we really know how complex systems like the Linux works?
 - How can we understand the high-level design cohice and evolution of a Super Complex system, like the Linux kernel?
