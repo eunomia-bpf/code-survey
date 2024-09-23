@@ -45,7 +45,7 @@ def plot_commit_complexity_pie():
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
-    ax.set_title('Commit Complexity', fontsize=12)
+    # ax.set_title('Commit Complexity', fontsize=12)
     
     # Save the figure
     plt.savefig('imgs/commit_pie_chart_commit_complexity.png')
