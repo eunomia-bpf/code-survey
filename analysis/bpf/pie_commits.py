@@ -18,10 +18,10 @@ def plot_commit_classification_pie():
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
     # Truncate labels for better readability
-    truncated_labels = [label[:20] + '...' if len(label) > 10 else label for label in value_counts.index]
+    truncated_labels = [label[:15] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
     # ax.set_title('Commit Classification', fontsize=12)
     
@@ -40,10 +40,10 @@ def plot_commit_complexity_pie():
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
     # Truncate labels for better readability
-    truncated_labels = [label[:20] + '...' if len(label) > 10 else label for label in value_counts.index]
+    truncated_labels = [label[:15] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
     # ax.set_title('Commit Complexity', fontsize=12)
     
@@ -78,7 +78,7 @@ def plot_implementation_component_pie():
     truncated_labels = [label[:30] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
     
     # Save the figure
@@ -96,10 +96,10 @@ def plot_logic_component_pie():
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
     # Truncate labels for better readability
-    truncated_labels = [label[:20] + '...' if len(label) > 10 else label for label in value_counts.index]
+    truncated_labels = [label[:15] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
     # ax.set_title('Major Logic Component', fontsize=12)
     
@@ -144,10 +144,10 @@ def plot_usecases_or_submodule_pie():
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
     # Truncate labels for better readability
-    truncated_labels = [label[:20] + '...' if len(label) > 10 else label for label in value_counts.index]
+    truncated_labels = [label[:15] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
     # ax.set_title('Use Cases or Submodule Events', fontsize=12)
     
