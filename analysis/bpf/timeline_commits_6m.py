@@ -167,9 +167,10 @@ def plot_frequency_timeline(field_name, title, max_labels, threshold, save_path,
     ax.set_xlabel('Time (6-Month Intervals)', fontsize=14)
     ax.set_ylabel('Number of Commits (Smoothed)', fontsize=14)
 
-    truncated_labels = [label[:20] + '...' if len(label) > 20 else label for label in smoothed_counts.columns]
+    truncated_labels = [label[:15] + '...' if len(label) > 20 else label for label in smoothed_counts.columns]
 
-    ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1,1))  # Place legend outside the plot
+    ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1,1), fontsize=16)  # Increase fontsize to 12
+    # Place legend outside the plot
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -256,10 +257,10 @@ def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoo
         ax.set_ylabel('Number of Commits (Smoothed)', fontsize=14)
 
         # Truncate long labels for the legend
-        truncated_labels = [label[:20] + '...' if len(label) > 20 else label for label in categories_subset]
+        truncated_labels = [label[:15] + '...' if len(label) > 20 else label for label in categories_subset]
 
         # Add the legend with truncated labels
-        ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1, 1))  # Place legend outside the plot
+        ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1, 1), fontsize=16)  # Place legend outside the plot
 
         plt.tight_layout()
 
