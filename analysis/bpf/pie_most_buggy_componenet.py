@@ -56,16 +56,26 @@ top_valid_buggy_files = all_valid_changed_files.value_counts().head(10)
 
 # Save the pie chart of kernel components with most bugs to a variable
 fig, ax = plt.subplots(figsize=(10, 6))
-component_bug_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors, ax=ax)
-# plt.title('Kernel Implementation Components with the Most Bugs')
+
+# Increase font sizes for the title and labels, and make the legend bigger
+component_bug_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors, ax=ax, textprops={'fontsize': 15})
+
+# Make legend bigger
+# plt.legend(title="Components", fontsize=12, title_fontsize='13')
+
+# Adjust title size if necessary
+# plt.title('Kernel Components with the Most Bugs', fontsize=16)
+
 plt.ylabel('')
+
+# Make sure everything fits well
 plt.tight_layout()
 
-# Save the figure to a variable
-v = fig
+# Save the figure to a PDF file with larger font and legend
+plt.savefig('imgs/kernel_components_most_buggy_pie_chart.png')
 
 # Print the top 10 most buggy files
 print("Top 10 Files with the Most Bug Fixes:\n", top_valid_buggy_files)
 
-# # Show the pie chart (saved in variable 'v')
-plt.savefig('imgs/kernel_components_most_buggy_pie_chart.pdf')
+# Show the pie chart (optional for debugging purposes)
+plt.show()
