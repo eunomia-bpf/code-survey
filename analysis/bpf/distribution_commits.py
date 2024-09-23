@@ -251,15 +251,15 @@ not_related_logic_count = not_related_logic.shape[0]
 not_related_implementation_percentage = (not_related_implementation_count / total_commits) * 100
 not_related_logic_percentage = (not_related_logic_count / total_commits) * 100
 
-# Output the percentage of commits marked as "Not related to BPF subsystem"
-print(f"Number of commits marked as 'Not related to BPF subsystem' in Implementation Component: {not_related_implementation_count} ({not_related_implementation_percentage:.2f}% of total commits)")
-print(f"Number of commits marked as 'Not related to BPF subsystem' in Logic Component: {not_related_logic_count} ({not_related_logic_percentage:.2f}% of total commits)")
+# # Output the percentage of commits marked as "Not related to BPF subsystem"
+# print(f"Number of commits marked as 'Not related to BPF subsystem' in Implementation Component: {not_related_implementation_count} ({not_related_implementation_percentage:.2f}% of total commits)")
+# print(f"Number of commits marked as 'Not related to BPF subsystem' in Logic Component: {not_related_logic_count} ({not_related_logic_percentage:.2f}% of total commits)")
 
-# Check if there's any significant mismatch in these percentages
-if not_related_implementation_percentage > 5 or not_related_logic_percentage > 5:
-    print("\nThere is a significant number of commits marked as 'Not related to BPF subsystem'. This indicates potential data quality issues and suggests that data cleaning may be necessary to improve analysis correctness.")
-else:
-    print("\nThe number of commits marked as 'Not related to BPF subsystem' is relatively low and does not significantly affect overall analysis correctness.")
+# # Check if there's any significant mismatch in these percentages
+# if not_related_implementation_percentage > 5 or not_related_logic_percentage > 5:
+#     print("\nThere is a significant number of commits marked as 'Not related to BPF subsystem'. This indicates potential data quality issues and suggests that data cleaning may be necessary to improve analysis correctness.")
+# else:
+#     print("\nThe number of commits marked as 'Not related to BPF subsystem' is relatively low and does not significantly affect overall analysis correctness.")
 
 print("\nSample Commit Messages of 'Not related to BPF subsystem' in Implementation Component:")
 print(not_related_implementation_commit_messages)

@@ -127,7 +127,7 @@ def plot_frequency_timeline(field_name, title, max_labels, threshold, save_path)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
     plt.xticks(rotation=45)
 
-    ax.set_title(title, fontsize=16)
+    # ax.set_title(title, fontsize=16)
     ax.set_xlabel('Time (3-Month Intervals)', fontsize=14)
     ax.set_ylabel('Number of Commits', fontsize=14)
 

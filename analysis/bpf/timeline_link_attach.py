@@ -42,7 +42,7 @@ plt.figure(figsize=(8, 5))
 for feature_type in ['sock_ops', 'sock_opt_types', 'link_type', 'attach_types']:
     plt.plot(df_cumulative_fixed.index, df_cumulative_fixed[feature_type], label=feature_type)
 
-plt.title('Cumulative BPF Features: sock_ops, sock_opt_types, link_type, attach_types')
+# plt.title('Cumulative BPF Features: sock_ops, sock_opt_types, link_type, attach_types')
 plt.xlabel('Date')
 plt.ylabel('Cumulative Count of Features')
 plt.legend(title='Feature Type')

@@ -70,7 +70,7 @@ plt.plot(
 )
 
 # Add titles and labels
-plt.title('Verifier Instruction Modification vs. General Verifier Bugs Over Time')
+# plt.title('Verifier Instruction Modification vs. General Verifier Bugs Over Time')
 plt.xlabel('Date')
 plt.ylabel('Number of Commits')
 plt.grid(True)

@@ -1,11 +1,10 @@
 import pandas as pd
+import re
+import matplotlib.pyplot as plt
 
 # Load the CSV file for analysis
-file_path = '/mnt/data/commit_survey (19).csv'
+file_path = 'data/commit_survey.csv'  # Replace with your file path
 data = pd.read_csv(file_path)
-
-# Display the first few rows to understand its structure
-data_head = data.head()
 
 # Filter out commits related to "bug" or "fix" in the commit classification
 buggy_commits = data[data['commit_classification'].str.contains("bug|fix", case=False, na=False)]
@@ -32,7 +31,7 @@ label_replacements = {
     "The eBPF maps. It changes how data structures shared between user-space and kernel-space (maps) are created or managed.": "eBPF maps",
     "The eBPF JIT compiler for different architectures. It changes how eBPF bytecode is translated into machine code for different hardware architectures.": "eBPF JIT compiler",
     "The helper and kfuncs. It modifies or adds helpers and kernel functions that eBPF programs can call.": "eBPF helpers and kfuncs",
-    "The syscall interface. It modifies or adds code related to system calls between user-space and kernel-space.": "Syscall interface"
+    "The syscall interface. It changes the system calls through which user-space programs interact with eBPF.": "Syscall interface"
 }
 
 # Apply these replacements to the component column
@@ -41,6 +40,9 @@ filtered_buggy_components_cleaned['short_component'] = filtered_buggy_components
 # Group other components under 'Others'
 main_components = ["eBPF events (tracepoints, perf, etc.)", "eBPF verifier", "eBPF maps", "eBPF JIT compiler", "eBPF helpers and kfuncs", "Syscall interface"]
 filtered_buggy_components_cleaned['short_component'] = filtered_buggy_components_cleaned['short_component'].apply(lambda x: x if x in main_components else "Others")
+
+# Count the number of bugs per component
+component_bug_counts = filtered_buggy_components_cleaned['short_component'].value_counts()
 
 # Extract file paths and count the occurrences
 def extract_valid_file_paths(changed_files_entry):
@@ -52,11 +54,18 @@ all_valid_changed_files = filtered_buggy_components_cleaned['changed_files'].dro
 # Top 10 files with the most bug fixes
 top_valid_buggy_files = all_valid_changed_files.value_counts().head(10)
 
-# Count number of files changed in each commit
-filtered_buggy_components_cleaned['num_files_changed'] = filtered_buggy_components_cleaned['changed_files'].dropna().apply(lambda x: len(extract_valid_file_paths(x)))
+# Save the pie chart of kernel components with most bugs to a variable
+fig, ax = plt.subplots(figsize=(10, 6))
+component_bug_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors, ax=ax)
+# plt.title('Kernel Implementation Components with the Most Bugs')
+plt.ylabel('')
+plt.tight_layout()
 
-# Distribution of commits by number of files changed
-multiple_files_changed = filtered_buggy_components_cleaned['num_files_changed'].value_counts()
+# Save the figure to a variable
+v = fig
 
-# Display the first few rows, top 10 files, and distribution of file changes
-data_head, top_valid_buggy_files, multiple_files_changed
+# Print the top 10 most buggy files
+print("Top 10 Files with the Most Bug Fixes:\n", top_valid_buggy_files)
+
+# # Show the pie chart (saved in variable 'v')
+plt.savefig('imgs/kernel_components_most_buggy_pie_chart.pdf')

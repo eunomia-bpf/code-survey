@@ -39,7 +39,7 @@ df_cumulative_fixed = df_cumulative_fixed.cummax()
 plt.figure(figsize=(8, 5))
 df_cumulative_fixed.plot(ax=plt.gca())
 
-plt.title('Cumulative BPF Features Commit Timeline with BPF Features')
+# plt.title('Cumulative BPF Features Commit Timeline with BPF Features')
 plt.xlabel('Date')
 plt.ylabel('Cumulative Count of Features')
 plt.legend(title='Feature Type')

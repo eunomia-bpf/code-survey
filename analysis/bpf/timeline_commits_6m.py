@@ -5,6 +5,7 @@ import re
 import matplotlib.dates as mdates
 import os
 import warnings
+import math
 
 # Optionally suppress FutureWarnings (not recommended for production)
 # warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -60,7 +61,7 @@ print(f"Total commits after filtering out 'unrelated' and 'merge' commits: {filt
 # Update 'flattened_usecases' based on filtered data, excluding "not related" strings
 flattened_usecases = pd.Series([
     usecase for sublist in filtered_data['parsed_usecases'] for usecase in sublist
-    if not re.search(r"not relate", usecase, re.IGNORECASE)
+    if not re.search(r"not relate|merge|sure", usecase, re.IGNORECASE)
 ])
 
 # Debug: Check the contents of flattened_usecases
@@ -162,7 +163,7 @@ def plot_frequency_timeline(field_name, title, max_labels, threshold, save_path,
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
     plt.xticks(rotation=45)
 
-    ax.set_title(title, fontsize=16)
+    # ax.set_title(title, fontsize=16)
     ax.set_xlabel('Time (6-Month Intervals)', fontsize=14)
     ax.set_ylabel('Number of Commits (Smoothed)', fontsize=14)
 
@@ -175,11 +176,10 @@ def plot_frequency_timeline(field_name, title, max_labels, threshold, save_path,
     plt.close()
 
     print(f"Saved smoothed timeline chart to {save_path}")
-
-# Function to plot timeline for use cases or submodule events with smoothing
-def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoothing_window=2):
+def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoothing_window=2, max_categories_per_fig=6):
     """
-    Plot a frequency-based timeline chart for use cases or submodule events with smoothing.
+    Plot a frequency-based timeline chart for use cases or submodule events with smoothing,
+    organizing them into subplots within a single figure if there are too many categories.
 
     Parameters:
     - title: Title of the chart.
@@ -187,6 +187,7 @@ def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoo
     - max_labels: Maximum number of labels to display (including 'Other').
     - threshold: Minimum frequency proportion to consider as significant.
     - smoothing_window: Window size for moving average.
+    - max_categories_per_subplot: Maximum number of categories to display per subplot.
     """
     print(f"\nGenerating timeline for: {title}")
 
@@ -194,9 +195,8 @@ def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoo
     exploded_data = filtered_data.explode('parsed_usecases')
 
     # Remove "not related" cases
-    filter_pattern = re.compile(r'not relate', re.IGNORECASE)
+    filter_pattern = re.compile(r'not relate|merge', re.IGNORECASE)
     exploded_data = exploded_data[~exploded_data['parsed_usecases'].str.contains(filter_pattern, na=False)]
-
     # Remove NaN entries
     exploded_data = exploded_data.dropna(subset=['parsed_usecases'])
 
@@ -226,32 +226,49 @@ def plot_usecases_timeline(title, save_path, max_labels=8, threshold=0.005, smoo
     # Apply moving average for smoothing
     smoothed_counts = apply_moving_average(monthly_counts, window=smoothing_window)
 
-    # Plotting
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Determine the number of subplots needed
+    total_categories = len(smoothed_counts.columns)
+    num_subplots = math.ceil(total_categories / max_categories_per_fig)
+    print(f"Total categories: {total_categories}, will be split into {num_subplots} subplot(s)")
 
-    # Plot each category
-    for column in smoothed_counts.columns:
-        ax.plot(smoothed_counts.index, smoothed_counts[column], label=column)
+    # Create a single figure with multiple subplots
+    fig, axes = plt.subplots(num_subplots, 1, figsize=(10, 4 * num_subplots), sharex=True)
+    if num_subplots == 1:
+        axes = [axes]  # Make it iterable
 
-    # Formatting the x-axis with date labels
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
-    plt.xticks(rotation=45)
+    for subplot_num, ax in enumerate(axes):
+        start_idx = subplot_num * max_categories_per_fig
+        end_idx = start_idx + max_categories_per_fig
+        categories_subset = smoothed_counts.columns[start_idx:end_idx]
 
-    ax.set_title(title, fontsize=16)
-    ax.set_xlabel('Time (6-Month Intervals)', fontsize=14)
-    ax.set_ylabel('Number of Commits (Smoothed)', fontsize=14)
+        # Plot each category in the subset
+        for column in categories_subset:
+            ax.plot(smoothed_counts.index, smoothed_counts[column], label=column)
 
-    # Truncate long labels for the legend
-    truncated_labels = [label[:20] + '...' if len(label) > 20 else label for label in smoothed_counts.columns]
+        # Formatting the x-axis with date labels
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+        ax.tick_params(axis='x', rotation=45)
 
-    # Add the legend with truncated labels
-    ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1, 1))  # Place legend outside the plot
+        # Set titles and labels
+        subplot_title = f"{title} (Subplot {subplot_num + 1}/{num_subplots})"
+        # ax.set_title(subplot_title, fontsize=16)
+        ax.set_xlabel('Time (3-Month Intervals)', fontsize=14)
+        ax.set_ylabel('Number of Commits (Smoothed)', fontsize=14)
 
-    plt.tight_layout()
-    plt.savefig(save_path)
+        # Truncate long labels for the legend
+        truncated_labels = [label[:20] + '...' if len(label) > 20 else label for label in categories_subset]
+
+        # Add the legend with truncated labels
+        ax.legend(truncated_labels, loc='upper left', bbox_to_anchor=(1, 1))  # Place legend outside the plot
+
+        plt.tight_layout()
+
+    # Save the single figure
+    plt.savefig(save_path, bbox_inches='tight')
     plt.close()
 
     print(f"Saved smoothed timeline chart to {save_path}")
+    print("Timeline generation completed.")
 
 # Define thresholds and max_labels per field
 field_settings = {

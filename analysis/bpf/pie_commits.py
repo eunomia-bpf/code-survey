@@ -23,7 +23,7 @@ def plot_commit_classification_pie():
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
-    ax.set_title('Commit Classification', fontsize=12)
+    # ax.set_title('Commit Classification', fontsize=12)
     
     # Save the figure
     plt.savefig('imgs/commit_pie_chart_commit_classification.png')
@@ -51,8 +51,21 @@ def plot_commit_complexity_pie():
     plt.savefig('imgs/commit_pie_chart_commit_complexity.png')
     plt.close()
 
+# Mapping long labels to short summaries
+label_replacements = {
+    "The implementation happens in other subsystem and is related to eBPF events. e.g. probes perf events tracepoints network scheduler HID LSM etc. Note it's still related to how eBPF programs interact with these events.": "eBPF events (tracepoints, perf, etc.)",
+    "The eBPF verifier. This component ensures that eBPF programs are safe to run within the kernel.": "eBPF verifier",
+    "The eBPF maps. It changes how data structures shared between user-space and kernel-space (maps) are created or managed.": "eBPF maps",
+    "The eBPF JIT compiler for different architectures. It changes how eBPF bytecode is translated into machine code for different hardware architectures.": "eBPF JIT compiler",
+    "The helper and kfuncs. It modifies or adds helpers and kernel functions that eBPF programs can call.": "eBPF helpers and kfuncs",
+    "The syscall interface. It changes the system calls through which user-space programs interact with eBPF.": "Syscall interface"
+}
+
 # Function to plot pie chart for major implementation component
 def plot_implementation_component_pie():
+    # Apply the label replacements
+    survey_data['major_related_implementation_component'] = survey_data['major_related_implementation_component'].replace(label_replacements)
+    
     # Get the value counts for major implementation component
     value_counts = survey_data['major_related_implementation_component'].value_counts()
 
@@ -62,12 +75,11 @@ def plot_implementation_component_pie():
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
     # Truncate labels for better readability
-    truncated_labels = [label[:20] + '...' if len(label) > 10 else label for label in value_counts.index]
+    truncated_labels = [label[:30] + '...' if len(label) > 10 else label for label in value_counts.index]
 
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
-    ax.set_title('Major Implementation Component', fontsize=12)
     
     # Save the figure
     plt.savefig('imgs/commit_pie_chart_major_implementation_component.png')
@@ -89,7 +101,7 @@ def plot_logic_component_pie():
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
-    ax.set_title('Major Logic Component', fontsize=12)
+    # ax.set_title('Major Logic Component', fontsize=12)
     
     # Save the figure
     plt.savefig('imgs/commit_pie_chart_major_logic_component.png')
@@ -127,7 +139,7 @@ def plot_usecases_or_submodule_pie():
     value_counts = flattened_usecases.value_counts()
 
     # Aggregate smaller labels into "Other" if needed
-    max_labels = 8
+    max_labels = 10
     if len(value_counts) > max_labels:
         value_counts = value_counts[:max_labels]._append(pd.Series([value_counts[max_labels:].sum()], index=['Other']))
 
@@ -137,7 +149,7 @@ def plot_usecases_or_submodule_pie():
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(value_counts, labels=truncated_labels, autopct='%1.1f%%', startangle=90)
-    ax.set_title('Use Cases or Submodule Events', fontsize=12)
+    # ax.set_title('Use Cases or Submodule Events', fontsize=12)
     
     # Save the figure
     plt.savefig('imgs/commit_pie_chart_usecases_or_submodule_events.png')

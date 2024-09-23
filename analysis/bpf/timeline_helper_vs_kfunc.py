@@ -54,7 +54,7 @@ plt.figure(figsize=(8, 5))
 plt.plot(df_helper_cumulative.index, df_helper_cumulative.values, label='Helper')
 plt.plot(df_kfunc_cumulative.index, df_kfunc_cumulative.values, label='Kfunc', linestyle='--')
 
-plt.title('Cumulative BPF Features: Helper vs Kfunc')
+# plt.title('Cumulative BPF Features: Helper vs Kfunc')
 plt.xlabel('Date')
 plt.ylabel('Cumulative Count of Features')
 plt.legend(title='Feature Type')
