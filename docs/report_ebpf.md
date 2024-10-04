@@ -76,7 +76,7 @@ This analysis examines eBPF feature evolution, excluding helper functions and ke
 
 **Key Takeaways:**
 1. **Core features** like events, flags, map types, and program types have stabilized.
-2. The **bpf_link** introduction greatly helps manage growing use cases and complexity, while other components, like maps and flags, maintain a stable growth trajectory.
+2. The time when **bpf_link** is introductioned, kernel maintainers start to manage growing use cases and complexity so other components, like maps and flags, maintain a stable growth trajectory.
 
 To reproduce these results, you can run the following commands:
 

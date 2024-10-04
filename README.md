@@ -1,34 +1,42 @@
-# Code-Survey: Uncovering Insights in Complex Software evolutions with LLM
+# Code-Survey: Uncovering Insights in Large-Scale Codebases with LLM
 
-- Do we really know how complex systems like the Linux works?
-- How can we understand the high-level design cohice and evolution of a Super Complex system, like the Linux kernel?
+- Do we truly understand how complex systems, like the Linux kernel, work? 
+- How can we grasp the high-level design choices and evolution of such intricate systems?
 
-**Code-Survey** is `the first step` here to change that.
+**Code-Survey** is the first step in using LLMs to gain meaningful insights into large-scale software systems. Unlike Retrieval-Augmented Generation (RAG) or fine-tuning, Code-Survey offers a unique approach.
 
-> Imagine if you can ask every entry-level kernel developer, or a Graduate Student who is studying kernel, to do a survey and answer questions about every commit, what can you find with the results?
+> Imagine if every entry-level kernel developer or a graduate student studying the kernel， could participate in a survey about every commit. What valuable information could we uncover from the results?
 
-Code-Survey helps you `explore` and `analyze` the world's largest and most intricate codebases, like the Linux kernel. By carefully **design a survey** and **transforming** `unstructured data` like commits, mails into organized, `structed and easy-to-analyze data`, then you can do `quantitative` analysis on it. Code-Survey makes it simpler to uncover valuable insights in modern complex software systems.
+Code-Survey helps you explore and analyze some of the world's largest and most complex codebases, such as the Linux kernel. By carefully **designing a survey** and **transforming** unstructured data like commits and emails into organized, structured, and easy-to-analyze formats, you can perform quantitative analysis with ease. Code-Survey simplifies the process of uncovering valuable insights in modern complex software systems.
 
-Code-Survey is the first step trying to bridges the gap between high level `design`, `implementation`, `maintenance`, `reliability` and `security` using LLM, making complex systems more accessible.
+**See our arxiv for details: [https://arxiv.org/abs/2410.01837](https://arxiv.org/abs/2410.01837)**
 
-Unlike other approaches:
+Here is an example of analysis for the eBPF subsystem: **[docs/report_ebpf.md](docs/report_ebpf.md).** (Not yet complete...more is adding)
 
-- No human can do that before, but AI can.
-- No chatbots, RAG document search, or code generation: **stop the stupid AI!**
-- Just using data like git message and email data. Design a survey and run with hundreds lines of codes in Python. Just Apply to other project or subsystems by designing your code-survey!
+## Why Code-Survey?
+
+As far as we know, Code-Survey is the first method and tool that leverages LLMs to systematically explore and analyze large-scale codebases, providing quantitative results. By transforming unstructured data like git messages and emails into structured data, you can perform detailed analyses on software evolution, uncovering insights related to design, implementation, maintenance, reliability, and security.
+
+Software development is also a social activity, allowing the application of established social science techniques. By treating LLMs as human participants in a survey, Code-Survey bridges the gap between high-level design decisions and the intricate details of implementation. This enables the analysis of large-scale codebases like the Linux kernel in ways that were previously impossible.
+
+### Why Choose Code-Survey?
+
+- **Unprecedented Analysis**: No human can analyze large-scale codebases as thoroughly as AI can.
+- **No Chatbots or RAG**: Forget about chatbots, RAG document searches, or code generation. **Stop the ineffective AI!**
+- **Simple and Flexible**: Use only data like git messages and email data. Design a survey and run it with just a few lines of Python code. Easily apply Code-Survey to other projects or subsystems by designing your own code-survey.
 
 **Let's do Code-Survey!**
 
-## What can `Code-Survey` help answer?
+Join us in revolutionizing the way we understand and analyze complex software systems.
 
-- How do new feature introductions in component affect software stability and performance over the time?
-- What identifiable phases exist in a component lifecycle? Is it new, mature, refactored or deprecated?
-- What dependencies have emerged between features and component, and how do they affect software evolution?
-- How does bug frequency correlate with feature complexity?
-- What were the trade-offs considered in design decisions, and how do they manifest in the system's implementation?
-- How does the collaboration between developers affect the consistency and coherence of feature development?
+## What Questions Can Code-Survey Help Answer?
 
-Here is an example of analysis: **[docs/report_ebpf.md](docs/report_ebpf.md).** (Not yet complete...more is adding)
+- How do new feature introductions impact the stability and performance of existing components over time?
+- What are the identifiable phases in a component's lifecycle (e.g., development, stabilization, optimization)?
+- How have specific features evolved over successive commits?
+- Which components or files have the highest bug frequency?
+- What dependencies have emerged between features and components?
+- How can lessons from the development history of one subsystem improve others?
 
 ## Workflow / Methodolog
 
@@ -72,7 +80,6 @@ Note this is just a very simple demo now --- there are hundreds of ways to impro
 - You can simply run it multiple times to get multiple survey results and then average them. This is typically a real survey d and the result would be much better, but we need time and more money for API.
 - More Advance Agent design with multi-steps and reasonging, or multi-agent;
 - Better prompt engineering;
-
 
 ## Survey Example
 
@@ -129,6 +136,15 @@ questions:
 ......
 ```
 
+### run the survey example
+
+There are two examples to run the survey:
+
+- [survey/survey_agent.py](survey/survey_agent.py) is a simple script to run the [survey/feature_survey.yml](survey/feature_survey.yml) survey, which works on the feature_commit_details.csv dataset. It try to answer questions one at a time.
+- [survey/survey_struct.py](survey/survey_struct.py) is a simple script to run the [survey/commit_survey.yml](survey/commit_survey.yml) survey, which works on the commit_survey.csv dataset. It's using struct output and try to answer all questions at once. It will also revise the survey result to make it more accurate. 
+
+They are just simple scripts, you can set the `OPENAI_API_KEY` in the `.env` file to run it.
+
 ## Why LLM?
 
 LLMs have been proven effective in survey, summarization, and analysis tasks in fields like market research and chemistry. With LLMs, we can analyze unstructured data, which traditional methods struggle to handle efficiently. 
@@ -174,6 +190,22 @@ For a more detailed explanation and the general approach, see the [docs/best-pra
 5. **Integration of Additional Data Sources:** Incorporate data from reviews, issue trackers, and documentation to enhance insights into feature evolution.
 6. **Ethical and Privacy Considerations:** Focus on anonymization, regulatory compliance, and secure handling of sensitive data.
 
+## Citation
+
+If you find this work useful, please consider citing:
+
+```bibtex
+@misc{zheng2024codesurveyllmdrivenmethodologyanalyzing,
+      title={Code-Survey: An LLM-Driven Methodology for Analyzing Large-Scale Codebases}, 
+      author={Yusheng Zheng and Yiwei Yang and Haoqin Tu and Yuxi Huang},
+      year={2024},
+      eprint={2410.01837},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE},
+      url={https://arxiv.org/abs/2410.01837}, 
+}
+```
+
 ## References
 
 Linux development:
@@ -186,3 +218,12 @@ Linux development:
 AI model:
 
 - [Introducing OpenAI o1-preview](https://openai.com/index/introducing-openai-o1-preview/) They can reason through complex tasks and solve harder problems than previous models in science, coding, and math.
+
+Understanding the code:
+
+- [Using an LLM to Help With Code Understanding](https://dl.acm.org/doi/abs/10.1145/3597503.3639187)
+
+Software evolution:
+
+- [The Linux kernel as a case study in software evolution](https://www.sciencedirect.com/science/article/pii/S0164121209002519)
+- [Challenges in software evolution](https://ieeexplore.ieee.org/abstract/document/1572302)
