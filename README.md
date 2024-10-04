@@ -46,7 +46,7 @@ The core idea of Code-survey is to treat LLMs like human participants in a surve
 - By applying traditional human survey methods, we can efficiently conduct LLM-based surveys, while human experts provide oversight and validation to ensure accuracy.
 - You can let LLM help you with survey design and data 
 
-![workflow](docs/workflow.jpg)
+![workflow](docs/workflow.png)
 
 Our approach follows a well-defined workflow:
 
@@ -55,12 +55,15 @@ Our approach follows a well-defined workflow:
 3. **Human Experts or LLM Agents analysis results**: Ensuring accuracy and uncover new insights easily from that. If the results are not statisfied, go back to step 1 to enhance the survey.
 4. **Generate Reports**: Summarize the results and provide insights into the data.
 
-There are also 4 key steps to allow LLM Agent asistant to design the survey. The workflow and prompts are like:
+### Survey Design with LLM Assistance
 
-1. **Identify the target audience and their roles**: If you can ask every kernel developer to do a completed survey/questionare about a commit/a mail, what kinds of people may be intereted in it? Describe the roles in detail.
-2. **Designing High Level insightful questions based on the roles**: What are the most insightful questions related to `design`, `implementation`, `maintenance`, `reliability` and `security` of {role} may be interested in? Describe the questions for each role in detail.
-3. **Identify the required data types and sources for the insightful questions**: What are the data types and sources required to answer the insightful question {Your question} your descirbed before? Describe the data types and sources for each question in detail.
-4. **Design the survey questions to get the data:** What are the survey questions you can design to get the {data type} for the insightful question {Your question} from {data source} your descirbed before? Describe the survey questions for {data source} * {data type} in detail.
+A key aspect of Code-Survey is designing effective surveys to generate accurate data. Surveys can be designed by humans or LLM agents. We identify three key steps to guide LLM agents in designing surveys. The following prompts serve as a framework or LLM input for survey creation:
+
+- Design High-Level Insightful Questions: If you could ask every kernel developer to complete a survey or questionnaire about a commit or an email, what are the most insightful questions related to design, implementation, maintenance, reliability, and security? Describe the possible questions in detail.
+- Identify Required Data Types and Sources: What data types and sources are required to answer the insightful questions described previously? Describe the data types and sources for each question in detail.
+- Design Survey Questions to Retrieve Data: What survey questions can you design to obtain the required data types for the insightful questions from the data sources described previously? Describe the survey questions for kernel developers in detail.
+
+This workflow ensures that the LLM-driven survey design process leads to structured data that offers deeper insights into complex software systems, such as the Linux kernel. By guiding LLM agents through these steps, we can systematically extract valuable information from unstructured data sources.
 
 ## Linux-bpf Dataset
 
