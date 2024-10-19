@@ -13,6 +13,8 @@ Code-Survey helps you explore and analyze some of the world's largest and most c
 
 Here is an example of analysis for the eBPF subsystem: **[docs/report_ebpf.md](docs/report_ebpf.md).** (Not yet complete...more is adding)
 
+**Code-survey is a prototype and a on going poject now. We are working on the next step: Can we automatically mine meaningful pattern from everying we produced in the software developement? Just tell AI what you need, and ask AI to give you a compresenive report.**
+
 ## Why Code-Survey?
 
 As far as we know, Code-Survey is the first method and tool that leverages LLMs to systematically explore and analyze large-scale codebases, providing quantitative results. By transforming unstructured data like git messages and emails into structured data, you can perform detailed analyses on software evolution, uncovering insights related to design, implementation, maintenance, reliability, and security.
